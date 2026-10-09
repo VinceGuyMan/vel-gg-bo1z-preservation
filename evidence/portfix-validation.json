@@ -1,0 +1,23 @@
+{
+  "result": "PASS",
+  "checks": [
+    "occupied preferred port automatically changes",
+    "selected socket stays reserved",
+    "explicit occupied port stays strict",
+    "existing listener untouched",
+    "asset and LAN signaling reservations distinct",
+    "both occupied defaults bypassed in actual startup",
+    "correct owned health bo1z-coop-assets",
+    "correct owned health bo1z-local-signaling",
+    "browser URL uses selected game port",
+    "browser query uses selected signaling port",
+    "printed LAN invitation uses selected port",
+    "launcher clean shutdown",
+    "both owned listeners released",
+    "default-port occupants still running"
+  ],
+  "checkCount": 14,
+  "platform": "macOS",
+  "engineOrBrowserStarted": false,
+  "windowsRuntimeTested": false
+}
