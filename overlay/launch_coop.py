@@ -106,10 +106,9 @@ def reserve_port(bind, port):
             if exclusive is None:
                 raise RuntimeError('This Python runtime cannot reserve exclusive Windows ports.')
             reserved.setsockopt(socket.SOL_SOCKET, exclusive, 1)
-        else:
-            # Permit our cleanly closed HTTP ports still in TCP TIME_WAIT. Do
-            # not enable SO_REUSEPORT; active listeners must still be refused.
-            reserved.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Leave POSIX address reuse disabled during reservation. On macOS,
+        # SO_REUSEADDR can admit a wildcard listener beside a live loopback
+        # listener. Automatic selection also handles recently closed ports.
         reserved.bind((bind, port))
         reserved.listen(1)
         return reserved
@@ -119,6 +118,18 @@ def reserve_port(bind, port):
     except OSError as error:
         reserved.close()
         raise RuntimeError(f'Port {port} on {bind} is unavailable. Choose another --port or --signal-port; stop any previous launcher in its own terminal.') from error
+
+
+def reserve_launch_port(bind, requested, preferred):
+    """Keep an exclusive reservation; automatic defaults may use a free OS port."""
+    if requested is not None:
+        return reserve_port(bind, requested)
+    try:
+        return reserve_port(bind, preferred)
+    except RuntimeError as error:
+        if not isinstance(error.__cause__, OSError):
+            raise
+    return reserve_port(bind, 0)
 
 
 def health(url, timeout=0.8, opener=HTTP):
@@ -280,8 +291,8 @@ def discover_node(explicit=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--archive', help='Path to the complete captured archive')
-    parser.add_argument('--port', type=int, default=8767, help='Loopback-only game asset port')
-    parser.add_argument('--signal-port', type=int, default=8768)
+    parser.add_argument('--port', type=int, help='Exact game port; otherwise prefer 8767 and automatically find a free port')
+    parser.add_argument('--signal-port', type=int, help='Exact signaling port; otherwise prefer 8768 and automatically find a free port')
     parser.add_argument('--lan', action='store_true', help='Explicitly allow LAN connections to signaling; assets remain loopback-only')
     parser.add_argument('--signaling-url', help='Use an existing HTTPS signaling service; start only local game assets')
     parser.add_argument('--node', help='Existing Windows Node.js executable (22, 24 or 26); no installation or download')
@@ -301,7 +312,7 @@ def main(argv=None):
         parser.error('--startup-diagnostics requires explicit --free-internet-host')
     if args.signaling_url and args.lan:
         parser.error('--signaling-url and --lan select different signaling owners; use one')
-    if not 1 <= args.port <= 65535 or not args.signaling_url and (not 1 <= args.signal_port <= 65535 or args.port == args.signal_port):
+    if any(port is not None and not 1 <= port <= 65535 for port in (args.port, args.signal_port)) or (not args.signaling_url and args.port is not None and args.port == args.signal_port):
         parser.error('ports must be distinct integers between 1 and 65535')
     processes, reserved = [], []
     previous_break_handler = None
@@ -341,9 +352,12 @@ def main(argv=None):
         if remote:
             admit_external_signaling(remote)
         signal_bind = '0.0.0.0' if args.lan else '127.0.0.1'
-        reserved.append(reserve_port('127.0.0.1', args.port))
+        reserved.append(reserve_launch_port('127.0.0.1', args.port, 8767))
+        args.port = reserved[0].getsockname()[1]
         if not remote:
-            reserved.append(reserve_port(signal_bind, args.signal_port))
+            reserved.append(reserve_launch_port(signal_bind, args.signal_port, 8768))
+            args.signal_port = reserved[1].getsockname()[1]
+        print(f'Using game port {args.port}' + (f' and signaling port {args.signal_port}.' if not remote else '.'), flush=True)
         launch_id = secrets.token_urlsafe(24)
         # Close a reservation only when launching the corresponding child. Health
         # launchId verification protects against a competing bind in this interval.
@@ -368,10 +382,10 @@ def main(argv=None):
                               '--port', str(args.signal_port), '--launch-id=' + launch_id]
             if args.free_internet_host:
                 from free_host import STUN_URL
-                signal_command += ['--require-invite', '--stun-url', STUN_URL,
-                                   '--allow-origin', f'http://127.0.0.1:{args.port}']
-                if args.port != 8767:
-                    signal_command += ['--allow-origin', 'http://127.0.0.1:8767']
+                # Use signaling's normal exact-loopback-origin policy. Guests
+                # also select their own free asset ports; their ports need not
+                # equal the host's. Invitation/ticket authentication is unchanged.
+                signal_command += ['--require-invite', '--stun-url', STUN_URL]
             signals = child(signal_command, **({'env': tunnel_environment()} if args.free_internet_host else {}))
             processes.append(signals)
             wait_ready(signals, f'http://127.0.0.1:{args.signal_port}/coop/health', 'bo1z-local-signaling', launch_id)

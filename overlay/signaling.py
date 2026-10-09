@@ -107,7 +107,7 @@ def metadata(value):
         if key in DIGESTS:
             valid = isinstance(item, str) and re.fullmatch('[0-9a-f]{64}', item)
         elif key == 'overlayBuildId':
-            valid = item == 'bo1z-shipping-preview-v1'
+            valid = item == 'bo1z-portfix-v1'
         elif key == 'mapSlug':
             valid = item == 'five'
         elif key == 'mode':

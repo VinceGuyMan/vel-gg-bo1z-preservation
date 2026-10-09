@@ -7,7 +7,7 @@ export function installBridge(module) {
   const memory=module.HEAPF32.buffer, u8=new Uint8Array(memory), u32=new Uint32Array(memory);
   u8.fill(0,pointer,pointer+bytes+4096);
   Atomics.store(u32,184721744/4,pointer);
-  const record={build:'bo1z-shipping-preview-v1',pointer,sent:0,received:0,dropped:0,errors:[],events:[]};
+  const record={build:'bo1z-portfix-v1',pointer,sent:0,received:0,dropped:0,errors:[],events:[]};
   let stopped=false;
   const event=(value)=>{record.events.push({ms:performance.now(),...value});if(record.events.length>256)record.events.shift()};
   function address(ip,port=3074) {

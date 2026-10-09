@@ -22,7 +22,7 @@ python3 launch_coop.py --archive "/path/to/archive"
 py -3 launch_coop.py --archive "F:\path\to\archive" --node "C:\Program Files\nodejs\node.exe"
 ```
 
-Keep the terminal open; Control-C stops owned services. Default ports are 8767/8768; occupied ports are refused. All game assets remain on 127.0.0.1. Use the title’s Solo, Multiplayer or Settings controls. Solo retains ten original destinations; multiplayer starts Five / Classic.
+Keep the terminal open; Control-C stops owned services. Default ports prefer 8767/8768 and automatically select free alternatives when occupied. Explicit --port / --signal-port choices stay strict. All game assets remain on 127.0.0.1. Use the title’s Solo, Multiplayer or Settings controls. Solo retains ten original destinations; multiplayer starts Five / Classic.
 
 ## Controller
 

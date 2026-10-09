@@ -1,6 +1,6 @@
 # BO1Z preserved co-op preview
 
-A title screen, controller adapter and experimental networking overlay for the captured BO1Z game. Build: `bo1z-shipping-preview-v1`.
+A title screen, controller adapter and experimental networking overlay for the captured BO1Z game. Build: `bo1z-portfix-v1`.
 
 **This is a feasibility preview.** Original-engine co-op has been demonstrated, and the optional public WebSocket relay passed browser packet tests. Reliable Mac/Windows matches, four-player gameplay and Internet gameplay are unfinished. See [CAPABILITIES.md](CAPABILITIES.md) before sharing.
 
@@ -25,7 +25,7 @@ Windows PowerShell:
 py -3 launch_coop.py --archive "F:\path\to\vel-gg-bo1z-2026-10-08" --node "C:\Program Files\nodejs\node.exe"
 ```
 
-Use your actual paths. Ports 8767/8768 must be free; the launcher refuses existing listeners. To select others, supply `--port` and `--signal-port`. The game page and all assets stay on 127.0.0.1.
+Use your actual paths. Ports default to 8767/8768, with automatic free-port selection if occupied. The terminal and browser use the selected ports. Explicit `--port` and `--signal-port` choices remain strict; no existing listener is stopped. The game page and all assets stay on 127.0.0.1.
 
 ## Controller
 

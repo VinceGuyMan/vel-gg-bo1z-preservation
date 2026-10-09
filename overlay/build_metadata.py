@@ -188,7 +188,7 @@ def generate(args):
         shell_paths[name] = Path(path).resolve()
     shell = [{'path': name, 'bytes': path.stat().st_size, 'sha256': file_hash(path)}
              for name, path in sorted(shell_paths.items())]
-    result = {'schemaVersion': 1, 'overlayBuildId': 'bo1z-shipping-preview-v1', 'protocolVersion': args.protocol_version,
+    result = {'schemaVersion': 1, 'overlayBuildId': 'bo1z-portfix-v1', 'protocolVersion': args.protocol_version,
               'bridgeAbiVersion': args.bridge_abi_version, 'patchSchemaRevision': args.patch_schema_revision,
               'baseWasmSha256': base, 'patchedWasmSha256': patched_hash,
               'patchManifestSha256': file_hash(patch_path), 'patchBuildId': patch.get('build_id'),

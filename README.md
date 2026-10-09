@@ -10,6 +10,8 @@ An archive of the **October 8, 2026 capture of [vel.gg/bo1z](https://vel.gg/bo1z
 
 > **The full capture is included in the [research release](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.1.0).** Download all three ZIP parts, the manifest and restoration tool; follow [these instructions](docs/DOWNLOAD.md). No website recapture is required. Git clones and GitHub’s automatic “Source code” ZIP contain tools/sources only.
 
+**Launcher update:** [v0.1.1 automatic-port fix](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.1.1) is a small separate download. Use it on both machines; keep the original archive. [Update steps](docs/PORTFIX.md)
+
 ## Preservation record
 
 | Captured October 8, 2026 | Verified scope |

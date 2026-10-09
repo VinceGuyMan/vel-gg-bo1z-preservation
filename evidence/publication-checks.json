@@ -50,5 +50,6 @@
     "isolated_checks_passed": 17,
     "streaming_join_sha256_and_zip64_extraction_tested": true,
     "wrong_hash_existing_output_and_unsafe_zip_members_rejected": true
-  }
+  },
+  "frozenRelease": "v0.1.0"
 }

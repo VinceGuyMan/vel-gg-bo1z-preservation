@@ -11,7 +11,7 @@ from urllib.parse import parse_qs, urlsplit
 from portable_replay import load_archive_replay
 
 HERE = Path(__file__).resolve().parent
-BUILD = 'bo1z-shipping-preview-v1'
+BUILD = 'bo1z-portfix-v1'
 BASE_SHA = '61192df377020627f52fa7e9fd28047bd53662aa46e5e3cd6e7fad0c5c35cc98'
 
 
@@ -52,23 +52,23 @@ def overlays(root):
     if(devmap<0)throw Error('Experimental co-op requires a configured Zombies map');
     args.splice(devmap,0,'+set','sv_maxclients','4');
     const userRoot=args.indexOf('fs_h');
-    if(userRoot>=0)args[userRoot+1]='/opfs/bo1z-shipping-preview-v1-user';
+    if(userRoot>=0)args[userRoot+1]='/opfs/bo1z-portfix-v1-user';
     if(globalThis.__coopConfig?.role==='client' && !globalThis.__coopConfig?.deferJoin)
       args.splice(args.indexOf('+devmap'),2,'+connect','10.0.0.1:3074');
     state.arguments=[...args];
     if(globalThis.__coopBeforeRun)await globalThis.__coopBeforeRun(module,args);
     module.callMain(args);""")
-    engine = engine.replace("'kisak-page-query'", "'bo1z-shipping-preview-v1-page-query'")
+    engine = engine.replace("'kisak-page-query'", "'bo1z-portfix-v1-page-query'")
     assert engine.count("'kisak-renderer'") == 3
-    engine = engine.replace("'kisak-renderer'", "'bo1z-shipping-preview-v1-renderer'")
+    engine = engine.replace("'kisak-renderer'", "'bo1z-portfix-v1-renderer'")
     maps = (root / 'site/bo1z/maps.js').read_text(encoding='utf-8')
     needle = "opfs: m.zone === FIRST ? 'pack' : 'pack-' + m.slug"
     assert maps.count(needle) == 1
-    maps = maps.replace(needle, "opfs: 'bo1z-shipping-preview-v1-pack-' + m.slug")
-    maps = maps.replace("settings: m.slug + '-settings'", "settings: 'bo1z-shipping-preview-v1-' + m.slug + '-settings'")
+    maps = maps.replace(needle, "opfs: 'bo1z-portfix-v1-pack-' + m.slug")
+    maps = maps.replace("settings: m.slug + '-settings'", "settings: 'bo1z-portfix-v1-' + m.slug + '-settings'")
     # Preserve workers' BroadcastChannel pairing after changing the page identity.
     glue = (root / 'site/bo1z/artifacts/KisakBlack-web.mjs').read_text(encoding='utf-8')
-    glue = glue.replace('kisak-page-query', 'bo1z-shipping-preview-v1-page-query')
+    glue = glue.replace('kisak-page-query', 'bo1z-portfix-v1-page-query')
     # Observe bytes at the original successful instantiation sites. Keep original
     # Emscripten Asyncify/TLS/worker/runtime startup and fallback paths intact.
     needle = 'var instance=await WebAssembly.instantiate(binary,imports);return instance'

@@ -1,6 +1,6 @@
 import {getControllerSettings,setControllerSettings,subscribeController,controllerStatus,startControllerPolling} from '/bo1z/coop/gamepad-input.js';
 
-export const MENU_BUILD='bo1z-shipping-preview-v1';
+export const MENU_BUILD='bo1z-portfix-v1';
 export const MAP_DETAILS=Object.freeze({
  five:{zone:'zombie_pentagon',place:'The Pentagon'},kino:{zone:'zombie_theater',place:'Berlin'},riese:{zone:'zombie_cod5_factory',place:'The factory'},
  nacht:{zone:'zombie_cod5_prototype',place:'The airfield'},verruckt:{zone:'zombie_cod5_asylum',place:'The asylum'},shinonuma:{zone:'zombie_cod5_sumpf',place:'The swamp'},

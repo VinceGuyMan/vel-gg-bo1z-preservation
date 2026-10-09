@@ -8,7 +8,7 @@ export const KNOWN_LAYOUT = Object.freeze({
   patchedWasmSha256: '29c436447d467e63ae05346bdb5ed53c5f79ce0ab5e7493148200797b7129628',
   bridgeSourceSha256:'a756498b3c351a771fd1e3c77b08eebe0c32da48e034d3278e3f4c7c5918ba98',
   observerSourceSha256: '4692475b3756ee37ae5ba2d2b90fcc39a7c2ab10448da47d41b5c86c4a93b116',
-  bridgeBuild: 'bo1z-shipping-preview-v1'
+  bridgeBuild: 'bo1z-portfix-v1'
 });
 const META_FIELDS = ['overlayBuildId', 'protocolVersion', 'bridgeAbiVersion', 'patchSchemaRevision', 'baseWasmSha256',
  'patchedWasmSha256', 'patchManifestSha256', 'shellManifestSha256', 'mapManifestSha256',

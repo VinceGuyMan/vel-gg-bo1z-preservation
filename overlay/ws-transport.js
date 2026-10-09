@@ -1,6 +1,6 @@
 // Optional terminal TCP relay behind the preserved native-datagram bridge.
 // No engine calls, TURN, fallback, persistence, replay or progress restoration.
-export const PROTOCOL='bo1z-original-packet-ws-v1',BUILD='bo1z-shipping-preview-v1';
+export const PROTOCOL='bo1z-original-packet-ws-v1',BUILD='bo1z-portfix-v1';
 const MAGIC=0x42575331,HEADER=36,MAX=65536,CONTROL=8192,QUEUE=1024*1024;
 const canonical=o=>JSON.stringify(Object.fromEntries(Object.keys(o).sort().map(k=>[k,o[k]])));
 // Readiness changes are mutable; only authenticated routing/epoch identity is pinned.

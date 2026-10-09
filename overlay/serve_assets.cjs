@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const http=require('node:http');
 const {pipeline,Transform}=require('node:stream');
-const BUILD='bo1z-shipping-preview-v1';
+const BUILD='bo1z-portfix-v1';
 const common={'Cross-Origin-Opener-Policy':'same-origin','Cross-Origin-Embedder-Policy':'require-corp','Cross-Origin-Resource-Policy':'same-origin','Cache-Control':'no-store'};
 function contained(file,root){const rel=path.relative(root,file);return rel==='' || !path.isAbsolute(rel) && rel!=='..' && !rel.startsWith('..'+path.sep);}
 function loadManifest(filename){
