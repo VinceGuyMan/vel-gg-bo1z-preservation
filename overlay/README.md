@@ -67,4 +67,4 @@ python3 verify.py --archive "/path/to/archive"
 
 Add `--verify-map-content` to rehash the selected Five map's saved content. Default verification reuses capture hashes for large assets and checks their current sizes; it cannot detect same-size asset edits. Verification proves package identity, not gameplay readiness.
 
-The locally built private runtime includes the patched experimental WASM. The GitHub source bundle excludes game assets and prebuilt engines, and rebuilds this exact patch locally from the original archive. Review [PROVENANCE.md](PROVENANCE.md). The public source handoff is [vel-gg-bo1z-preservation](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation). See its preservation record and credits first.
+The locally built runtime includes the patched experimental WASM and is bundled separately in the full research download. The GitHub source bundle excludes game assets and prebuilt engines, and rebuilds this exact patch locally from the original archive. Review [PROVENANCE.md](PROVENANCE.md). The public handoff is [vel-gg-bo1z-preservation](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation). See its preservation record and credits first.

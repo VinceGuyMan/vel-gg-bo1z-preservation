@@ -1,13 +1,13 @@
 {
   "schema": "bo1z-publication-checks/v1",
   "date": "2026-10-09",
-  "scope": "Public source handoff; no new native or network gameplay run.",
+  "scope": "Source handoff plus a separate full captured research download; no new native or network gameplay run.",
   "repository": {
     "source_hash_manifest": "SOURCE-SHA256SUMS.txt",
     "independently_pinned_capture_index": true,
     "approved_overlay_sources": 52,
     "game_payload_or_prebuilt_engine_included": false,
-    "python_sources_parsed": 17,
+    "python_sources_parsed": 18,
     "relative_document_links_resolved": true,
     "authored_svg_banner_visually_reviewed": true
   },
@@ -30,5 +30,25 @@
     "archive_modified": false,
     "game_engine_executed": false,
     "network_service_launched": false
+  },
+  "distribution": {
+    "git_and_source_zip": "Sources and integrity records only",
+    "full_research_download": "Unchanged capture, separately built experimental runtime, source/docs",
+    "requires_website_recapture": false,
+    "private_gameplay_logs_or_browser_profiles_included": false
+  },
+  "full_capture_zip_audit": {
+    "source_zip_bytes": 5805348866,
+    "source_zip_sha256": "8a807df1e41ba491a3e0d76a8074b2d21e3762611614b78f83cd2a202083857b",
+    "all_3656_indexed_members_sha256_and_crc_passed": true,
+    "capture_index_byte_exact": true,
+    "only_additional_member": "SHA256SUMS.txt",
+    "unsafe_paths_or_local_caches_present": false,
+    "anonymous_public_site_har_and_screenshots_retained": true
+  },
+  "multipart_restore_tool_validation": {
+    "isolated_checks_passed": 16,
+    "streaming_join_sha256_and_zip64_extraction_tested": true,
+    "wrong_hash_existing_output_and_unsafe_zip_members_rejected": true
   }
 }

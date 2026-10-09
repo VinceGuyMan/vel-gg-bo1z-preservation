@@ -2,7 +2,7 @@
 
 This project documents the **October 8, 2026 capture of [vel.gg/bo1z](https://vel.gg/bo1z/)**. The original website and its contributors made the browser game; this repository preserves knowledge about it and adds optional experiments.
 
-**The public repository contains tools, documentation and integrity records. It does not distribute the original game assets or engine binaries.** You need your own compatible extracted capture to run the original archive or the preview. A clone of this repository is not a playable game download.
+**The [full research release](DOWNLOAD.md) includes the captured game resources and original engine, a separate built experimental preview, and these source/docs.** No recapture is needed. The Git tree and automatic source ZIP contain tools, documentation and integrity records; cloning alone does not download the game.
 
 ## The captured snapshot
 

@@ -14,7 +14,7 @@
 | Four players / TURN | Four room slots, three synthetic guest routes and configurable WebRTC transport. | Four native players in a game, forced-TURN gameplay or a bundled TURN service. WSS/TCP is a separate optional transport, not TURN. |
 | Other maps | All ten captured Solo routes remain accessible. | Co-op runtime profiles beyond Five / Classic, or all-map multiplayer validation. |
 
-Launchers target macOS and Windows with a Chromium browser and Python 3.10+. Windows additionally needs installed Node.js 22, 24 or 26 for asset delivery. This is not a signed native app, console port or validated mobile game. Each player supplies the complete matching capture; the public source package does not bundle game assets or prebuilt engines.
+Launchers target macOS and Windows with a Chromium browser and Python 3.10+. Windows additionally needs installed Node.js 22, 24 or 26 for asset delivery. This is not a signed native app, console port or validated mobile game. The [research download](DOWNLOAD.md) includes the capture and built preview; Git source archives contain neither game assets nor prebuilt engines.
 
 The host runs the original authoritative game. Each player supplies the same local assets and matching build; assets are not streamed between players. WebRTC is the default. Optional player-hosted WSS needs a separately obtained supported tunnel tool; dropped relay members are terminal. No automatic fallback or host migration is provided.
 

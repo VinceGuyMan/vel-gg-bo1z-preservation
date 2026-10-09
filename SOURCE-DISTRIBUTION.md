@@ -1,6 +1,6 @@
 # Source distribution and engine reconstruction
 
-The public source release contains preservation records/tools and an optional overlay. It excludes the captured game, original/patched WASM, generated Emscripten glue and private test data. [Rights and attribution](PROVENANCE.md) remain separate from technical reproducibility.
+The Git tree and source ZIP contain preservation records/tools and an optional overlay. They exclude the captured game, original/patched WASM, generated Emscripten glue and private test data. The separate [full research download](docs/DOWNLOAD.md) includes the unchanged capture and built preview. [Rights and attribution](PROVENANCE.md) remain separate from technical reproducibility.
 
 ## Build a private overlay
 

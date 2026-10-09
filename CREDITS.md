@@ -14,6 +14,6 @@ KisakBlack's own [upstream credits](https://github.com/SwagSoftware/KisakBlack#c
 
 Tools used in preservation and research include [Emscripten](https://emscripten.org/), [WABT](https://github.com/WebAssembly/wabt), [Playwright](https://playwright.dev/), Python, Node.js and Chromium. The optional free Internet host uses a separately installed [Cloudflare Tunnel client](https://github.com/cloudflare/cloudflared).
 
-**Credit does not grant redistribution rights.** The original game, assets, names and third-party work retain their existing rights. The public repository does not include game assets or a prebuilt engine. The comparison web-port repository carries [GPLv3](https://github.com/riicchhaarrd/KisakBlack/blob/web-port/LICENSE); that does not establish the captured binary's complete source or license. See [PROVENANCE.md](PROVENANCE.md) for the boundary between the capture and our changes.
+**Credit does not grant redistribution rights.** The original game, assets, names and third-party work retain their existing rights. The research release contains the preserved deployment and a separate experimental engine; Git source archives exclude those binaries/assets. The comparison web-port repository carries [GPLv3](https://github.com/riicchhaarrd/KisakBlack/blob/web-port/LICENSE); that does not establish the captured binary's complete source or license. See [PROVENANCE.md](PROVENANCE.md) for the boundary between the capture and our changes.
 
 If an attribution is missing or incorrect, please open an issue with a primary source so it can be corrected.

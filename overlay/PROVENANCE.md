@@ -6,6 +6,6 @@ Matching complete deployed source/build inputs were not recovered. The patch res
 
 A comparison KisakBlack webport repository carries GPLv3, but that comparison is not proof of this deployed artifact's exact source or licensing. No license for the captured game's content or deployed binary is inferred. No original game assets, artwork, audio, prebuilt engine or private test logs belong in the GitHub source bundle.
 
-The ready-to-run runtime overlay is prepared for private preservation testing. Publication/redistribution rights and corresponding-source obligations remain unresolved; this preparation does not certify them. No new blanket license is assigned to the project.
+The built runtime overlay is bundled separately in the full research download. Publication/redistribution rights and corresponding-source obligations remain unresolved; this preparation does not certify them. No new blanket license is assigned to the project.
 
 See the source bundle's engine reconstruction/provenance notes for patch boundaries. Record both engine hashes and preserve the original archive when reproducing results.

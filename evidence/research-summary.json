@@ -117,10 +117,10 @@
     "qaIdentityNote": "Initial title QA preceded the final settings correction; final dual-store DOM QA binds the final menu source and compatibility. Runtime reconstruction and final identity review bind the assembled final files."
   },
   "publicSummaryBoundary": {
-    "rawTestRecordsNotIncluded": true,
     "privateMachineDetailsAndNativeStateNotIncluded": true,
     "failedAdmissionsPreservedPrivately": true,
-    "claimScope": "Observed sub-results do not turn failed end-to-end gates into passes. Previous gameplay proofs do not validate the exact final preview."
+    "claimScope": "Observed sub-results do not turn failed end-to-end gates into passes. Previous gameplay proofs do not validate the exact final preview.",
+    "rawExperimentalGameplayRecordsNotIncluded": true
   },
   "sourceRecordDigests": [
     {
@@ -134,31 +134,36 @@
       "record": "responses.json",
       "sha256": "0c42013f632513bf6ac64f6535c43d9129b7f5f6b33125eebf1ea3f0db4d4dec",
       "bytes": 926655,
-      "rawRecordPublished": false
+      "rawRecordPublished": true,
+      "releasePath": "vel-gg-bo1z-2026-10-08/metadata/responses.json"
     },
     {
       "record": "manifest-verification.json",
       "sha256": "b9d66da400fe0411b2ccb268f396a15e451ad6f571d579a2d19b13defe566994",
       "bytes": 225865,
-      "rawRecordPublished": false
+      "rawRecordPublished": true,
+      "releasePath": "vel-gg-bo1z-2026-10-08/metadata/manifest-verification.json"
     },
     {
       "record": "errors.json",
       "sha256": "38b2a4604c41912dc2386bf5440ba2b515d5f0f090fedc7961eefa5ff33a863d",
       "bytes": 3471,
-      "rawRecordPublished": false
+      "rawRecordPublished": true,
+      "releasePath": "vel-gg-bo1z-2026-10-08/metadata/errors.json"
     },
     {
       "record": "offline-smoke-test.json",
       "sha256": "7376571f9189785df7ed0a8793dd648f6e3f80f5f8311c292904cd99a664a157",
       "bytes": 1585,
-      "rawRecordPublished": false
+      "rawRecordPublished": true,
+      "releasePath": "vel-gg-bo1z-2026-10-08/evidence/offline-smoke-test.json"
     },
     {
       "record": "offline-five-engine-test.json",
       "sha256": "57ae3006fa5807153f8bd79d3ca7d0ef7e51b9c7b28bcd012f959acd76461850",
       "bytes": 328572,
-      "rawRecordPublished": false
+      "rawRecordPublished": true,
+      "releasePath": "vel-gg-bo1z-2026-10-08/evidence/offline-five-engine-test.json"
     },
     {
       "record": "archive-integrity-after-candidate-v2-live.json",
@@ -270,10 +275,11 @@
     }
   ],
   "publication": {
-    "kind": "source-only-preservation-handoff",
+    "kind": "preservation-research-handoff",
     "overlayCodeAndEngineRecipeUnchangedFromPreview": true,
     "publicDocumentationDiffersFromPrivatePreview": true,
-    "capturedGamePayloadIncluded": false,
-    "prebuiltEnginesIncluded": false
+    "capturedGamePayloadIncluded": true,
+    "prebuiltEnginesIncluded": true,
+    "payloadLocation": "Separate full research release, excluded from Git tree/source ZIP"
   }
 }

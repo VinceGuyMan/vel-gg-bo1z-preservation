@@ -1,6 +1,6 @@
 # Optional preview: setup and controls
 
-The [unchanged original archive](PRESERVATION.md) is the preservation baseline. This overlay adds controls and networking; [capabilities](CAPABILITIES.md) lists its unfinished gates.
+The [unchanged original archive](PRESERVATION.md) is the preservation baseline. This overlay adds controls and networking; [capabilities](CAPABILITIES.md) lists its unfinished gates. The [full download](DOWNLOAD.md) includes both folders separately, so building is optional.
 
 ## Build and launch
 
