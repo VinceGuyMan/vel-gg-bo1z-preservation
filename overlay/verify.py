@@ -37,6 +37,17 @@ def main():
                 failures.append('Package digest mismatch: ' + name)
         if failures:
             raise ValueError('\n'.join(failures))
+        # Check the browser's source pins independently of the package manifest.
+        # A self-consistent manifest can still describe stale runtime references.
+        attestation = (ROOT / 'runtime-attestation.js').read_text(encoding='utf-8')
+        layout = (ROOT / 'status.js').read_text(encoding='utf-8')
+        for key, name in [('bridgeSourceSha256', 'bridge.js'), ('observerSourceSha256', 'observer.js'),
+                          ('nativeAdmissionSourceSha256', 'native-admission.js'), ('patchedWasmSha256', 'KisakBlack-web.wasm')]:
+            actual_pin = file_hash(ROOT / name)
+            for text in ([attestation, layout] if key in ('bridgeSourceSha256', 'observerSourceSha256', 'patchedWasmSha256') else [attestation]):
+                match = re.search(key + r"\s*:\s*['\"]([0-9a-f]{64})['\"]", text)
+                if not match or match.group(1) != actual_pin:
+                    raise ValueError('Browser runtime pin mismatch: ' + key)
         archive = archive_path(args.archive)
         stored = json.loads((ROOT / 'build-metadata.json').read_text(encoding='utf-8'))
         options = SimpleNamespace(archive=archive, patch_manifest=ROOT / 'patch-manifest.json',

@@ -17,7 +17,7 @@
 <div class="title-lockup"><p class="overline">One more round.</p><h1 id="game-title"><span>BLACK OPS</span>ZOMBIES</h1><p class="title-description">The lights are still on.<br>The doors are still locked.</p></div>
 <nav class="choices" aria-label="Main menu">
 <button id="solo" type="button" data-menu-control aria-expanded="false" aria-controls="solo-view"><span class="choice-index" aria-hidden="true">01</span><span class="choice-label">Solo<small>Choose your battleground</small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
-<a id="multiplayer" data-menu-control href="/bo1z/five?coop=1&amp;renderer=webgl2"><span class="choice-index" aria-hidden="true">02</span><span class="choice-label">Multiplayer<small>Five · Classic <span class="experimental">Experimental</span></small></span><span class="choice-arrow" aria-hidden="true">↗</span></a>
+<button id="multiplayer" type="button" data-menu-control aria-expanded="false" aria-controls="multiplayer-view"><span class="choice-index" aria-hidden="true">02</span><span class="choice-label">Multiplayer<small>System link · Find a local lobby <span class="experimental">Experimental</span></small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
 <button id="settings" type="button" data-menu-control aria-expanded="false" aria-controls="settings-view"><span class="choice-index" aria-hidden="true">03</span><span class="choice-label">Settings<small>Make yourself comfortable</small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
 </nav>
 <aside class="field-note"><span class="note-rule" aria-hidden="true"></span><p>Co-op and relay play are experimental.<br>Compatibility testing is ongoing.</p></aside>
@@ -28,9 +28,61 @@
 <div id="map-list" class="map-list" aria-label="Preserved solo maps"></div>
 <p class="small-note">Each map opens with its original loading screen and options.</p>
 </section>
+<section id="multiplayer-view" class="menu-view inner-view multiplayer-view" hidden aria-labelledby="multiplayer-title">
+<div class="section-heading"><div><p class="overline">Zombies / System link</p><h2 id="multiplayer-title">Multiplayer</h2></div><button class="back-button" type="button" data-menu-control data-back>← Back</button></div>
+<div class="lobby-toolbar"><div class="lobby-tabs" role="group" aria-label="Multiplayer options"><button id="find-lan" class="lobby-tab selected" type="button" data-menu-control aria-pressed="true">Find LAN games</button><button id="create-lan" class="lobby-tab" type="button" data-menu-control aria-pressed="false">Create lobby</button></div><span class="network-indicator"><i aria-hidden="true"></i> Local network</span></div>
+<div class="system-link-layout">
+<div class="session-main">
+<section id="lan-browser" aria-label="LAN lobbies">
+<div class="session-list-heading"><span id="lan-count">Available lobbies</span><button id="refresh-lan" type="button" class="text-button" data-menu-control>Refresh</button></div>
+<div class="session-column-head" aria-hidden="true"><span>Host lobby / map</span><span>Players</span></div>
+<div id="lan-rooms" class="session-list" aria-label="Choose a LAN lobby"></div>
+<div id="lan-state" class="session-empty" role="status" aria-live="polite"><span class="scan-symbol" aria-hidden="true">◌</span><strong>Scanning your local network…</strong><p>Keep both launchers open on the same network.</p></div>
+<p id="lan-warning" class="lobby-warning" role="status" hidden></p>
+<button id="join-lan" class="lobby-primary" type="button" data-menu-control disabled>Join lobby <span aria-hidden="true">→</span></button>
+</section>
+<form id="host-lan" class="host-form" hidden>
+<div class="session-list-heading"><span>Create a LAN lobby</span><span class="tiny-label">You are the host</span></div>
+<label class="host-field"><span>Lobby name</span><input id="host-name" type="text" maxlength="32" placeholder="Your lobby name" autocomplete="off" data-menu-control></label>
+<label class="host-field"><span>Map</span><select id="host-map" data-menu-control></select></label>
+<label class="host-field"><span>Game mode</span><select id="host-mode" data-menu-control><option value="classic">Classic</option></select></label>
+<label class="host-field"><span>Player limit</span><select id="host-players" data-menu-control><option value="2">2 players</option><option value="3">3 players</option><option value="4" selected>4 players</option></select></label>
+<fieldset id="host-horde" class="horde-options" hidden><legend>Horde options</legend>
+<label class="host-field"><span>Starting round</span><input id="host-round" type="number" min="1" max="255" value="1" inputmode="numeric" data-menu-control></label>
+<label class="host-field"><span>Maximum active zombies</span><input id="host-enemies" type="number" min="24" max="1024" value="128" inputmode="numeric" data-menu-control></label>
+<label class="check-row"><span>Show enemy counter</span><input id="host-counter" type="checkbox" data-menu-control></label>
+<label class="check-row"><span>No perks</span><input id="host-no-perks" type="checkbox" data-menu-control></label>
+<p id="host-count-warning" class="small-note" hidden>High zombie limits can reduce performance.</p>
+</fieldset>
+<p class="host-help">The lobby appears on other computers running this build. Each player loads their own archived game files.</p>
+<button id="host-submit" class="lobby-primary" type="submit" data-menu-control disabled>Create lobby <span aria-hidden="true">→</span></button>
+</form>
+<details id="manual-join" class="manual-join"><summary data-menu-control>Join by address or Internet invite</summary>
+<form id="manual-join-form"><label class="manual-field"><span>Signaling server</span><input id="manual-service" type="url" placeholder="http://192.168.1.10:8768" autocomplete="off" spellcheck="false" data-menu-control required></label><label class="manual-field"><span>Room code</span><input id="manual-code" type="text" maxlength="6" placeholder="ABC234" autocomplete="off" spellcheck="false" data-menu-control required></label><label class="manual-field manual-invitation"><span>Optional invitation</span><input id="manual-invite" type="password" maxlength="256" placeholder="Only if the host supplied one" autocomplete="off" data-menu-control></label><button class="text-button" type="submit" data-menu-control>Join room</button></form><p class="small-note">Use the host’s address. 127.0.0.1 refers to this computer. Internet discovery is not part of LAN browsing.</p></details>
+<p id="lobby-message" class="lobby-warning" role="status" aria-live="polite"></p>
+</div>
+<aside class="session-preview" aria-label="Selected lobby and map">
+<div class="preview-art"><img id="lobby-map-art" src="/bo1z/art/loadscreen_zombie_pentagon.webp" alt=""/><div class="preview-caption"><p id="preview-mode">Classic survival</p><h3 id="preview-map">Five</h3></div></div>
+<div class="roster-heading"><span id="preview-title">Your squad</span><span id="preview-occupancy">0 / 4</span></div>
+<ol id="lobby-roster" class="lobby-roster" aria-label="Players"><li class="open-slot"><span class="player-emblem" aria-hidden="true">+</span><span>Open slot</span></li><li class="open-slot"><span class="player-emblem" aria-hidden="true">+</span><span>Open slot</span></li><li class="open-slot"><span class="player-emblem" aria-hidden="true">+</span><span>Open slot</span></li><li class="open-slot"><span class="player-emblem" aria-hidden="true">+</span><span>Open slot</span></li></ol>
+<p id="preview-detail" class="preview-detail">Select a lobby, or create one for your friends.</p>
+</aside>
+</div>
+<p class="multiplayer-footnote"><span class="experimental">Experimental</span> Shared gameplay and co-op across all maps are still being tested.</p>
+</section>
 <section id="settings-view" class="menu-view inner-view" hidden aria-labelledby="settings-title">
 <div class="section-heading"><div><p class="overline">Options</p><h2 id="settings-title">Find your rhythm.</h2></div><button class="back-button" type="button" data-menu-control data-back>← Back</button></div>
 <div class="settings-layout">
+<fieldset class="settings-group profile-group"><legend>Player profile</legend>
+<div class="profile-layout"><div id="profile-preview" class="profile-preview" aria-label="Your player icon"></div><div>
+<label class="range-label" for="player-name">Player name</label>
+<input id="player-name" type="text" maxlength="24" autocomplete="off" spellcheck="false" data-menu-control>
+<p class="small-note">1–24 letters, numbers, spaces, dots, hyphens or underscores.</p>
+<div class="profile-actions"><button id="save-player-name" type="button" class="text-button" data-menu-control>Save name</button>
+<label class="text-button icon-upload">Choose PNG<input id="player-icon" type="file" accept="image/png,.png" aria-label="Choose PNG player icon" data-menu-control></label>
+<button id="remove-player-icon" type="button" class="text-button" data-menu-control>Remove icon</button></div>
+<p id="profile-status" class="small-note" role="status">Saved in this browser. Your name and icon are shared with your joined lobby. PNGs are cropped to a 64 × 64 thumbnail; original files stay on your computer. Profile changes apply to your next room and game.</p>
+</div></div></fieldset>
 <fieldset class="settings-group"><legend>Game</legend>
 <label class="range-label" for="mouse-sensitivity">Mouse sensitivity <output id="mouse-sensitivity-value" for="mouse-sensitivity">5.0</output></label>
 <input id="mouse-sensitivity" type="range" min="0.5" max="15" step="0.5" value="5" data-menu-control>
@@ -40,16 +92,14 @@
 <p class="small-note">Changes apply across the collection.</p>
 </fieldset>
 <fieldset class="settings-group"><legend>Controller</legend>
-<label class="check-row"><span>Enable controller<small>Standard controllers supported.</small></span><input id="controller-enabled" type="checkbox" checked data-menu-control></label>
-<label class="range-label" for="controller-sensitivity">Look sensitivity <output id="controller-sensitivity-value" for="controller-sensitivity">1.0</output></label>
-<input id="controller-sensitivity" type="range" min="0.25" max="3" step="0.05" value="1" data-menu-control>
-<label class="range-label" for="controller-deadzone">Stick dead zone <output id="controller-deadzone-value" for="controller-deadzone">18%</output></label>
-<input id="controller-deadzone" type="range" min="0.05" max="0.4" step="0.01" value="0.18" data-menu-control>
-<label class="check-row"><span>Invert look</span><input id="controller-invert" type="checkbox" data-menu-control></label>
+<div id="controller-fields"></div>
+<details id="controller-advanced" class="control-guide"><summary data-menu-control>Advanced aiming</summary><div id="controller-advanced-fields"></div></details>
+<p class="small-note">Left stick uses digital WASD movement. Activation changes when movement starts, not walking speed. Straight-line assist reduces accidental diagonals. Curve 1 is linear; higher values soften small aim motions. Smoothing adds delay. Mouse sensitivity also affects controller aiming.</p>
+<button id="reset-controller" class="text-button" type="button" data-menu-control>Restore gentle defaults</button>
 <p id="controller-status" class="small-note" role="status">Connect a controller to navigate.</p>
 </fieldset>
 </div>
-<details class="control-guide"><summary data-menu-control>Controls reference</summary><div class="control-columns"><div><h3>Keyboard &amp; mouse</h3><p>W A S D — Move<br>Mouse — Look / fire / aim<br>Space — Jump · Shift — Sprint<br>R — Reload · F — Use / revive<br>Esc — Pause / release cursor</p></div><div><h3>Controller</h3><p>Left / right stick — Move / look<br>RT / R2 — Fire · LT / L2 — Aim<br>A / Cross — Jump · B / Circle — Crouch<br>X / Square — Reload · D-pad up — Use / revive<br>Start / Options — Pause</p></div></div><p class="small-note">Click the game’s Start or Resume control when your browser asks to capture the cursor.</p></details>
+<details class="control-guide"><summary data-menu-control>Controls reference</summary><div class="control-columns"><div><h3>Keyboard &amp; mouse</h3><p>W A S D — Move<br>Mouse — Look / fire / aim<br>Space — Jump · Shift — Sprint<br>R — Reload · F — Use / revive<br>Esc — Pause / release cursor</p></div><div><h3>Controller</h3><p>Left / right stick — Move / look<br>RT / R2 — Fire · LT / L2 — Aim<br>A / Cross — Jump · B / Circle — Crouch<br>X / Square — Reload · D-pad up — Use / revive<br>Start / Options — Pause</p></div></div><p class="small-note">View / Share in the pause menu — Controller options<br>Click the game’s Start or Resume control when your browser asks to capture the cursor.</p></details>
 <div class="settings-bottom"><button id="reset-settings" type="button" class="text-button" data-menu-control>Reset settings</button><span id="settings-status" class="small-note" role="status">Saved on this browser.</span></div>
 </section>
 <p id="free-test-note" class="launch-note" hidden>This room is hosted by a player. Connection quality depends on both networks.</p>

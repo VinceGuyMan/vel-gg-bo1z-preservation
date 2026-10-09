@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "build": "bo1z-lan-lobby-v1",
+  "compatibilitySha256": "55aa3b61481f9b3c2e5c3aa27fbfd499c553f43bdb6ed6ce3a8ec810d7706f8f",
+  "patchedWasmSha256": "29c436447d467e63ae05346bdb5ed53c5f79ce0ab5e7493148200797b7129628",
+  "originalCaptureChanged": false,
+  "validation": {
+    "package": {
+      "files": 59,
+      "selectedFiveContentRehashed": true,
+      "runtimeSourcePinsVerified": true,
+      "modifiedBridgeRejected": true
+    },
+    "menu": {
+      "fixtureChecksPassed": 15,
+      "javascriptErrors": 0,
+      "widths": [
+        1440,
+        390
+      ],
+      "physicalControllerTested": false
+    },
+    "signaling": {
+      "pythonTestsPassed": 10,
+      "javascriptSchemaChecksPassed": 87,
+      "metadataFields": 14,
+      "classicMapIdentities": 10,
+      "hordeMapIdentities": 6
+    },
+    "discovery": {
+      "protocolAndLoopbackFixturesPassed": 30,
+      "launcherIntegrationChecksPassed": 18,
+      "port": 28769,
+      "transport": "IPv4 UDP broadcast",
+      "credentialsAdvertised": false
+    },
+    "windowsNodeBackend": {
+      "pageAliasesChecked": 20,
+      "mapModeIdentitiesChecked": 16,
+      "pythonJavascriptSettingsVectors": 337,
+      "proxyScenarios": 6,
+      "startupArgumentScenarios": 3,
+      "testedOnMac": true
+    },
+    "twoIsolatedBrowserClients": {
+      "actualHostUICreatedRoom": true,
+      "automaticDiscoveryAndRowJoin": true,
+      "distinctPlayerIdentities": true,
+      "webRTCReady": true,
+      "nativeMatchStarted": false
+    },
+    "physicalMacWindows": {
+      "windowsHostDiscoveredFromMac": true,
+      "joinedBySelectionWithoutCode": true,
+      "hostSettingsMatched": true,
+      "webRTCReady": true,
+      "nativeMatchStarted": false,
+      "gamePacketsClaimed": false
+    }
+  },
+  "limitations": [
+    "This validates lobby discovery, room settings/admission and peer connectivity, not a finished shared match.",
+    "Native co-op on all ten maps/six Horde profiles, four native players, physical controllers, full mechanics, separate-network gameplay and forced TURN remain unvalidated.",
+    "Map/mode/settings are selected before room creation; changing them requires leaving and creating a new room.",
+    "LAN broadcast can be blocked by network isolation or firewall rules; manual address/code joining remains available.",
+    "Docker templates were updated for dependency completeness but no container deployment was run."
+  ],
+  "screenshots": {
+    "menuDesign": "Synthetic host fixtures using archived artwork; desktop and 390px layouts checked.",
+    "physicalDiscovery": "Actual Windows host displayed by Mac browser; no native match started."
+  }
+}

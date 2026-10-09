@@ -440,7 +440,7 @@ def wait_public_ready(origin, registered_at, launch_id, children, probe=probe_pa
         value = response['json']
         if response['exit'] == 0 and response['status'] == 200 and isinstance(value, dict):
             valid = (value.get('ok') is True and value.get('service') == 'bo1z-local-signaling'
-                     and type(value.get('protocolVersion')) is int and value['protocolVersion'] == 1
+                     and type(value.get('protocolVersion')) is int and value['protocolVersion'] == 2
                      and value.get('transportProtocol') == PROTOCOL and value.get('gameAssets') is False
                      and value.get('launchId') == launch_id)
             if not valid or dns != 'resolved' or clock() > deadline:

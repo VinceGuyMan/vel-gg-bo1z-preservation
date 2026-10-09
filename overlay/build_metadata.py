@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 from pathlib import Path, PurePosixPath
+from host_settings import default_settings, settings_hash
 
 LAB = Path(__file__).resolve().parent
 ARCHIVE = LAB.parent / 'vel-gg-bo1z-2026-10-08'
@@ -178,7 +179,7 @@ def generate(args):
                    for p in (root / 'site/bo1z').iterdir() if p.is_file() and p.suffix in ('.js', '.html', '.css')}
     shell_paths['archive/serve.py'] = root / 'serve.py'
     shell_paths['archive/bo1z/artifacts/KisakBlack-web.mjs'] = root / 'site/bo1z/artifacts/KisakBlack-web.mjs'
-    for name in ['gamepad-input.js', 'ws-loader.js', 'ws-transport.js', 'ws_wire.py', 'ws_relay.py', 'peer-schema.js', 'bridge.js', 'rtc-transport.js', 'resume-controller.js', 'native-admission.js', 'runtime-attestation.js', 'status.js', 'status-ui.js', 'start-gate.js', 'request-policy.js', 'observer.js', 'lobby.js', 'lobby.css', 'serve_coop.py', 'export_assets.py', 'serve_assets.cjs', 'segmented_writer.py', 'portable_replay.py', 'launch_coop.py', 'free_host.py', 'signaling.py', 'ice_issuer.py', 'main-menu.html', 'main-menu.css', 'main-menu.js', 'network-config.json', 'build_metadata.py', 'verify.py', 'refresh_checksums.py', 'Launch Game.command', 'Launch Game.cmd', 'Launch Co-op.command', 'Launch Co-op.cmd', 'Launch LAN Host.command', 'Launch LAN Host.cmd', 'Launch Free Internet Host.command', 'Launch Free Internet Host.cmd']:
+    for name in ['player_profile.py', 'player-profile.js', 'host_settings.py', 'host-settings.js', 'lan_discovery.py', 'lan-lobby.js', 'gamepad-input.js', 'ws-loader.js', 'ws-transport.js', 'ws_wire.py', 'ws_relay.py', 'peer-schema.js', 'bridge.js', 'rtc-transport.js', 'resume-controller.js', 'native-admission.js', 'runtime-attestation.js', 'status.js', 'status-ui.js', 'start-gate.js', 'request-policy.js', 'observer.js', 'lobby.js', 'lobby.css', 'serve_coop.py', 'export_assets.py', 'serve_assets.cjs', 'segmented_writer.py', 'portable_replay.py', 'launch_coop.py', 'free_host.py', 'signaling.py', 'ice_issuer.py', 'main-menu.html', 'main-menu.css', 'main-menu.js', 'network-config.json', 'build_metadata.py', 'verify.py', 'refresh_checksums.py', 'Launch Game.command', 'Launch Game.cmd', 'Launch Co-op.command', 'Launch Co-op.cmd', 'Launch LAN Host.command', 'Launch LAN Host.cmd', 'Launch Free Internet Host.command', 'Launch Free Internet Host.cmd']:
         if (LAB / name).is_file():
             shell_paths['coop/' + name] = LAB / name
     for value in args.shell:
@@ -188,7 +189,7 @@ def generate(args):
         shell_paths[name] = Path(path).resolve()
     shell = [{'path': name, 'bytes': path.stat().st_size, 'sha256': file_hash(path)}
              for name, path in sorted(shell_paths.items())]
-    result = {'schemaVersion': 1, 'overlayBuildId': 'bo1z-portfix-v1', 'protocolVersion': args.protocol_version,
+    result = {'schemaVersion': 1, 'overlayBuildId': 'bo1z-lan-lobby-v2', 'protocolVersion': args.protocol_version,
               'bridgeAbiVersion': args.bridge_abi_version, 'patchSchemaRevision': args.patch_schema_revision,
               'baseWasmSha256': base, 'patchedWasmSha256': patched_hash,
               'patchManifestSha256': file_hash(patch_path), 'patchBuildId': patch.get('build_id'),
@@ -196,7 +197,7 @@ def generate(args):
               'mapManifestSha256': map_identity['mapManifestSha256'],
               'mapContentSha256': map_identity['mapContentSha256'], 'mapSlug': args.map,
               'mapZone': selected['zone'], 'mapLabel': selected['label'], 'mode': args.mode,
-              'maxPlayers': args.max_players, 'shell': shell, 'maps': catalog,
+              'maxPlayers': args.max_players, 'hostSettingsSha256': settings_hash(default_settings(args.mode, args.max_players)), 'shell': shell, 'maps': catalog,
               'provenance': {'assetHashSource': 'archive SHA256SUMS.txt cross-checked against capture responses.json',
                              'assetValidation': 'selected map content rehashed' if args.verify_content
                              else 'prior capture hashes reused; current existence/byte lengths checked',
@@ -210,7 +211,7 @@ def generate(args):
                               'Horde identities describe archived content availability; co-op gameplay validation is separate.']}
     guard = ['overlayBuildId', 'protocolVersion', 'bridgeAbiVersion', 'patchSchemaRevision', 'baseWasmSha256',
              'patchedWasmSha256', 'patchManifestSha256', 'shellManifestSha256',
-             'mapManifestSha256', 'mapContentSha256', 'mapSlug', 'mode', 'maxPlayers']
+             'mapManifestSha256', 'mapContentSha256', 'mapSlug', 'mode', 'maxPlayers', 'hostSettingsSha256']
     result['peerGuardFields'] = guard
     result['compatibilitySha256'] = object_hash({key: result[key] for key in guard})
     return result
@@ -224,7 +225,7 @@ def main():
     parser.add_argument('--output', type=Path, default=LAB / 'build-metadata.json')
     parser.add_argument('--map', default='five')
     parser.add_argument('--mode', choices=['classic', 'horde'], default='classic')
-    parser.add_argument('--protocol-version', type=int, default=1)
+    parser.add_argument('--protocol-version', type=int, default=2)
     parser.add_argument('--bridge-abi-version', type=int, default=1)
     parser.add_argument('--patch-schema-revision', type=int, default=1)
     parser.add_argument('--max-players', type=int, choices=[2, 3, 4], default=4)

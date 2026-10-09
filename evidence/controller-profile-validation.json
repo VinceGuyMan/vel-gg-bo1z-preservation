@@ -1,0 +1,329 @@
+{
+  "build": "bo1z-lan-lobby-v2",
+  "engineChanged": false,
+  "archiveChanged": false,
+  "inputSnapshotChecks": 27,
+  "browserChecks": 14,
+  "profileAdmissionChecks": 18,
+  "actualLauncherChecks": 12,
+  "checksPassed": true,
+  "physicalControllerFeelVerified": false,
+  "nativeGameNameRenderingVerified": false,
+  "newNativeMatchVerified": false,
+  "earlierLanEvidenceInvalidForNewExactBuild": true,
+  "limits": "Digital movement; browser-origin storage; PNG icons only in overlay UI; unchanged experimental co-op engine",
+  "reports": {
+    "controller-validation.json": {
+      "scope": "Pure generated standard gamepad snapshots and fake lifecycle targets; no physical controller/native game/browser owner",
+      "passed": true,
+      "checks": [
+        {
+          "name": "Radial deadzone centers drift and keeps diagonal magnitude bounded",
+          "passed": true
+        },
+        {
+          "name": "Both sticks map to preserved keys and bounded fractional mouse deltas",
+          "passed": true
+        },
+        {
+          "name": "Standard face/buttons/triggers use exact original native binding keys",
+          "passed": true
+        },
+        {
+          "name": "Held buttons emit one down and one up rather than frame repeats",
+          "passed": true
+        },
+        {
+          "name": "Duplicate pad bindings retain key until both buttons release",
+          "passed": true
+        },
+        {
+          "name": "Keyboard/controller OR ownership preserves physical key when pad releases",
+          "passed": true
+        },
+        {
+          "name": "Blur and reconnect release held inputs and require neutral before rearm",
+          "passed": true
+        },
+        {
+          "name": "Disable/hidden/dispose release all held keys without native setters",
+          "passed": true
+        },
+        {
+          "name": "Unmapped/short controllers fail closed instead of guessing vendor indices",
+          "passed": true
+        },
+        {
+          "name": "Menu navigation never leaks trigger/movement gameplay keys",
+          "passed": true
+        },
+        {
+          "name": "Native pause menu uses only original arrow/Enter/Escape pulses",
+          "passed": true
+        },
+        {
+          "name": "Pause menu View/Share delegates only local settings without game key",
+          "passed": true
+        },
+        {
+          "name": "Native menu transition releases held movement/fire and requires neutral",
+          "passed": true
+        },
+        {
+          "name": "Invert look and invalid clock are bounded/fail closed",
+          "passed": true
+        },
+        {
+          "name": "Settings clamp ranges and return immutable copies",
+          "passed": true
+        },
+        {
+          "name": "Adapter does not request lock/audio, dispatch synthetic keyboard/mouse or access game memory",
+          "passed": true
+        },
+        {
+          "name": "Polling blur/visibility/disconnect/pointer change and dispose clean owned listeners/frame",
+          "passed": true
+        },
+        {
+          "name": "Original capture wrapper preserves physical events and lifecycle without requesting pointer capture",
+          "passed": true
+        },
+        {
+          "name": "Movement activation is independent of aim deadzone and prevents early full-speed steps",
+          "passed": true
+        },
+        {
+          "name": "Movement hysteresis avoids repeated on/off at the activation boundary and returns to rest",
+          "passed": true
+        },
+        {
+          "name": "Straight-line assist rejects incidental sideways tilt but keeps intentional diagonal and instant reversal",
+          "passed": true
+        },
+        {
+          "name": "Movement settings cannot rearm a held stick on return from blur",
+          "passed": true
+        },
+        {
+          "name": "Nonlinear aim softens small motions but retains full outer-stick speed",
+          "passed": true
+        },
+        {
+          "name": "ADS and vertical multipliers adjust only look, preserving movement and trigger bindings",
+          "passed": true
+        },
+        {
+          "name": "Aim smoothing is bounded, centers immediately and is cleared on blur",
+          "passed": true
+        },
+        {
+          "name": "Unsmooth aim displacement is frame-rate independent over an equal duration",
+          "passed": true
+        },
+        {
+          "name": "Every exposed controller range clamps finite values and ignores NaN/infinity",
+          "passed": true
+        }
+      ],
+      "sourceSha256": "d757a9321d30695f6f02f4085938759a3fdb96d083f9f16881b0ed041cd8f757"
+    },
+    "browser-validation.json": {
+      "scope": "Isolated Chromium UI fixtures and real PNG conversion; no physical controller or native gameplay",
+      "passed": true,
+      "checks": [
+        {
+          "name": "Ten shared tuning controls show gentle defaults",
+          "passed": true
+        },
+        {
+          "name": "Independent movement and aiming values survive browser reload",
+          "passed": true
+        },
+        {
+          "name": "Controller menu navigation adjusts new tuning controls",
+          "passed": true
+        },
+        {
+          "name": "Gentle reset restores all controller values",
+          "passed": true
+        },
+        {
+          "name": "Real PNG upload is normalized to a bounded thumbnail and saved with name",
+          "passed": true
+        },
+        {
+          "name": "Name and icon survive reload",
+          "passed": true
+        },
+        {
+          "name": "Unsafe/invalid name is rejected without replacing saved profile",
+          "passed": true
+        },
+        {
+          "name": "Fake PNG is rejected while retaining prior icon",
+          "passed": true
+        },
+        {
+          "name": "Create lobby previews local name/icon and suggests a lobby name",
+          "passed": true
+        },
+        {
+          "name": "Custom lobby name travels to host creation without icon/profile in URL",
+          "passed": true
+        },
+        {
+          "name": "Small screen options avoid horizontal overflow",
+          "passed": true
+        },
+        {
+          "name": "Remove icon preserves saved name",
+          "passed": true
+        },
+        {
+          "name": "In-game Controller panel uses identical fields and synchronizes title controls",
+          "passed": true
+        },
+        {
+          "name": "No uncaught JavaScript errors",
+          "passed": true
+        }
+      ],
+      "errors": []
+    },
+    "profile-validation.json": {
+      "scope": "PNG validator and local signaling API fixtures; no native game or physical controller",
+      "passed": true,
+      "checks": [
+        {
+          "name": "Actual browser-reencoded PNG passes bounded CRC/pixel validation",
+          "passed": true
+        },
+        {
+          "name": "Reject unsafe name",
+          "passed": true
+        },
+        {
+          "name": "Reject blank name",
+          "passed": true
+        },
+        {
+          "name": "Reject overlong name",
+          "passed": true
+        },
+        {
+          "name": "Reject extra field",
+          "passed": true
+        },
+        {
+          "name": "Reject remote icon",
+          "passed": true
+        },
+        {
+          "name": "Reject fake image",
+          "passed": true
+        },
+        {
+          "name": "Reject oversized image",
+          "passed": true
+        },
+        {
+          "name": "Reject inflated pixels",
+          "passed": true
+        },
+        {
+          "name": "Reject bad filter",
+          "passed": true
+        },
+        {
+          "name": "Reject corrupted PNG chunk CRC",
+          "passed": true
+        },
+        {
+          "name": "Empty icon is accepted with a normalized name",
+          "passed": true
+        },
+        {
+          "name": "Host and guest names/icons preserved through actual signaling admission",
+          "passed": true
+        },
+        {
+          "name": "Public configuration and LAN summary omit display profiles/images",
+          "passed": true
+        },
+        {
+          "name": "Admitted host roster contains guest profile",
+          "passed": true
+        },
+        {
+          "name": "Display profiles leave native network identities unchanged",
+          "passed": true
+        },
+        {
+          "name": "Invalid profile rejected before allocating guest slot",
+          "passed": true
+        },
+        {
+          "name": "Four profile slots fit bounded event queues",
+          "passed": true
+        }
+      ]
+    },
+    "live-launch-validation.json": {
+      "scope": "Actual Mac launcher, HTTP asset/signaling and profile host/join admission; no native game, physical controller or fresh LAN discovery proof. Existing user UDP listener left intact.",
+      "passed": true,
+      "build": "bo1z-lan-lobby-v2",
+      "checks": [
+        {
+          "name": "Owned launcher services ready with matching launch identity",
+          "passed": true
+        },
+        {
+          "name": "Actual HTTP host/join admits distinct saved profiles and room name",
+          "passed": true
+        },
+        {
+          "name": "Public discovery/configuration does not expose PNG profiles",
+          "passed": true
+        },
+        {
+          "name": "Served gamepad-input.js equals packaged bytes",
+          "passed": true
+        },
+        {
+          "name": "Served player-profile.js equals packaged bytes",
+          "passed": true
+        },
+        {
+          "name": "Served lobby.js equals packaged bytes",
+          "passed": true
+        },
+        {
+          "name": "/bo1z/engine.js includes name launch argument and local profile import",
+          "passed": true
+        },
+        {
+          "name": "/bo1z/coop-engine.js includes name launch argument and local profile import",
+          "passed": true
+        },
+        {
+          "name": "Title offers profile, advanced aim and named host controls",
+          "passed": true
+        },
+        {
+          "name": "Owned launcher clean exit",
+          "passed": true
+        },
+        {
+          "name": "Owned listener 60558 released",
+          "passed": true
+        },
+        {
+          "name": "Owned listener 60559 released",
+          "passed": true
+        }
+      ],
+      "compatibilitySha256": "34761bd0d59bd9c6fc5b47b70b31b885cc4585f6950f98d6dc4a9f532b538ab8"
+    }
+  }
+}

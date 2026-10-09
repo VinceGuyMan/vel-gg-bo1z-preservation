@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const http=require('node:http');
 const {pipeline,Transform}=require('node:stream');
-const BUILD='bo1z-portfix-v1';
+const BUILD='bo1z-lan-lobby-v2';
 const common={'Cross-Origin-Opener-Policy':'same-origin','Cross-Origin-Embedder-Policy':'require-corp','Cross-Origin-Resource-Policy':'same-origin','Cache-Control':'no-store'};
 function contained(file,root){const rel=path.relative(root,file);return rel==='' || !path.isAbsolute(rel) && rel!=='..' && !rel.startsWith('..'+path.sep);}
 function loadManifest(filename){
@@ -44,12 +44,25 @@ function range(size,encoding,allowed,value){
   if(start>end||start>=size)return null;status=206;}
  return {start,end,status,length:Math.max(0,end-start+1)};
 }
-function createHandler(m){return function(req,res){
+function discoveryOrigin(value){const match=/^http:\/\/127\.0\.0\.1:(\d{1,5})$/.exec(value);if(!match||Number(match[1])<1||Number(match[1])>65535)throw Error('discovery_origin');return value;}
+function createHandler(m,discoveryUrl=null){if(discoveryUrl)discoveryOrigin(discoveryUrl);return function(req,res){
  res.on('error',()=>{});
  function simple(code,body='',extra={}){const bytes=Buffer.from(body);res.writeHead(code,{...common,...extra,...(code===204?{}:{'Content-Type':'text/plain; charset=utf-8','Content-Length':bytes.length})});res.end(req.method==='HEAD'||code===204?undefined:bytes);}
  const t=target(req.url);if(!t){req.resume();simple(404,'Resource was not captured');return;}
  if(!['GET','HEAD'].includes(req.method)){req.resume();simple(req.method==='POST'&&t.pathname==='/bo1z/telemetry'?204:405);return;}
  if(t.pathname==='/bo1z/telemetry'){simple(204);return;}
+ if(t.pathname==='/coop/lan/rooms'){
+  let done=false,request;
+  const reply=bytes=>{if(done)return;done=true;res.writeHead(200,{...common,'Content-Type':'application/json','Content-Length':bytes.length});res.end(req.method==='HEAD'?undefined:bytes);};
+  const failed=()=>reply(Buffer.from(JSON.stringify({ok:true,rooms:[],warnings:['LAN discovery is unavailable. Open this build using its launcher.'],scannedAt:0})));
+  if(!discoveryUrl){failed();return;}
+  request=http.get(discoveryUrl+'/coop/lan/rooms',{timeout:2000},response=>{let size=0,chunks=[];
+   response.on('data',chunk=>{size+=chunk.length;if(size>131072){response.destroy();request.destroy();failed();}else chunks.push(chunk);});
+   response.on('end',()=>{try{const bytes=Buffer.concat(chunks),payload=JSON.parse(bytes);if(response.statusCode!==200||payload?.ok!==true||!Array.isArray(payload.rooms))throw Error('discovery_response');reply(bytes);}catch{failed();}});
+   response.on('error',failed);
+  });request.on('timeout',()=>{request.destroy();failed();});request.on('error',failed);
+  res.once('close',()=>{if(!done)request.destroy();});return;
+ }
  if(t.pathname==='/'){simple(302,'',{'Location':'/bo1z/'});return;}
  if(t.pathname==='/bo1z-coop'){simple(302,'',{'Location':'/bo1z-coop/'+(t.query?'?'+t.query:'')});return;}
  if(t.pathname==='/bo1z/coop/'){simple(302,'',{'Location':'/bo1z/five?coop=1&renderer=webgl2'});return;}
@@ -65,9 +78,10 @@ function createHandler(m){return function(req,res){
  res.once('close',()=>{if(!stream.destroyed)stream.destroy();});
  };}
 function main(argv){
- if(argv.length!==4||argv[0]!=='--manifest'||argv[2]!=='--port'||!/^\d+$/.test(argv[3]))throw Error('arguments');
+ if(![4,6].includes(argv.length)||argv[0]!=='--manifest'||argv[2]!=='--port'||!/^\d+$/.test(argv[3])||argv.length===6&&argv[4]!=='--discovery-url')throw Error('arguments');
  const port=Number(argv[3]);if(port<1||port>65535)throw Error('port');const m=loadManifest(argv[1]);
- const server=http.createServer({maxHeaderSize:16384},createHandler(m));server.requestTimeout=30000;server.headersTimeout=30000;
+ const discoveryUrl=argv.length===6?discoveryOrigin(argv[5]):null;
+ const server=http.createServer({maxHeaderSize:16384},createHandler(m,discoveryUrl));server.requestTimeout=30000;server.headersTimeout=30000;
  const sockets=new Set();server.on('connection',s=>{sockets.add(s);s.once('close',()=>sockets.delete(s));s.on('error',()=>{});});
  server.on('clientError',(error,s)=>s.destroy());server.on('error',()=>{console.error('Asset server failed');process.exitCode=1;shutdown(1);});
  let stopping=false;

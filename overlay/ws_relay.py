@@ -5,7 +5,7 @@ import base64,collections,hashlib,json,re,secrets,socket,struct,threading,time
 from pathlib import Path
 from ws_wire import Rejected,read_frame,frame,Messages,DeadlineReader,decode_control,close_valid
 PROTOCOL='bo1z-original-packet-ws-v1'
-BUILD='bo1z-portfix-v1'
+BUILD='bo1z-lan-lobby-v2'
 MAGIC=0x42575331;HEADER=36;MAX_PACKET=65536;MAX_MESSAGE=HEADER+MAX_PACKET;CONTROL=8192
 MAX_WS_ROOMS=4;MAX_WS_SOCKETS=16;TICKET_SECONDS=5;AUTH_SECONDS=3;IDLE_SECONDS=15
 ROOM_PAYLOAD_BUDGET=1024*1024*1024;MEMBER_PAYLOAD_BUDGET=256*1024*1024

@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/assets/preservation-banner.svg" alt="vel.gg / BO1Z — preservation record, October 8, 2026" width="100%"></p>
 
-<p align="center"><a href="https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.1.0">Full research download</a> · <a href="https://vel.gg/bo1z/">Original project</a> · <a href="CREDITS.md">Credits</a> · <a href="docs/CAPABILITIES.md">Capabilities</a></p>
+<p align="center"><a href="https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.1.0">Full research download</a> · <a href="https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.2.0">Latest preview v0.2.0</a> · <a href="https://vel.gg/bo1z/">Original project</a> · <a href="CREDITS.md">Credits</a> · <a href="docs/CAPABILITIES.md">Capabilities</a></p>
 
 # vel.gg / BO1Z preservation
 
@@ -10,7 +10,7 @@ An archive of the **October 8, 2026 capture of [vel.gg/bo1z](https://vel.gg/bo1z
 
 > **The full capture is included in the [research release](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.1.0).** Download all three ZIP parts, the manifest and restoration tool; follow [these instructions](docs/DOWNLOAD.md). No website recapture is required. Git clones and GitHub’s automatic “Source code” ZIP contain tools/sources only.
 
-**Launcher update:** [v0.1.1 automatic-port fix](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.1.1) is a small separate download. Use it on both machines; keep the original archive. [Update steps](docs/PORTFIX.md)
+**Current preview:** [v0.2.0](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.2.0) adds LAN lobby selection, host options, separate controller movement/aim tuning, player names and PNG lobby icons. Install the same preview on both computers beside the original capture. The full research archive stays available at [v0.1.0](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.1.0); see [v0.2.0 update steps](docs/UPDATE-V2.md). The older automatic-port build is [v0.1.1](https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/releases/tag/v0.1.1).
 
 ## Preservation record
 
@@ -33,18 +33,18 @@ On Windows use `py -3`. The verifier is read-only. The [original integrity index
 
 ## Optional improvements
 
-The separate preview adds **Solo / Multiplayer / Settings**, standard Xbox/PlayStation controller input, and experimental networking around the original engine.
+The separate **bo1z-lan-lobby-v2** preview adds **Solo / Multiplayer / Settings**, LAN lobby browsing, host map/settings selection, controller tuning and local player profiles around the original engine. [Install v0.2.0 →](docs/UPDATE-V2.md) · [Launch instructions →](docs/LAUNCH.md) · [Controller/profile guide →](docs/CONTROLS.md)
 
 | Demonstrated | Still unfinished |
 | --- | --- |
 | Two original-engine players on one Mac; shared movement, zombie damage/death, points, purchase and down state. | Dependable Mac/Windows matches; doors, revive, rounds and reconnect. |
 | Physical LAN shared spawns and guest movement reaching the host. | Consistent control in both directions; intermittent native input fault unresolved. |
 | Public HTTPS/WSS relay passed generated-packet tests. | Separate-network Internet gameplay, four native players and forced TURN. |
-| Title/browser checks and simulated controller navigation. | Physical controller gameplay and all-map runtime validation. |
+| LAN room discovery and selection; scoped controller input, profile and browser checks for v2. | Physical controller gameplay and all-map runtime validation. |
 
-**Co-op and online packet relay are feasible. This is not a finished online co-op release.** Earlier game/relay observations do not validate the exact final menu/controller preview. [Every capability and limit →](docs/CAPABILITIES.md)
+**Co-op and online packet relay are feasible. This is not a finished online co-op release.** Earlier game/relay observations do not validate complete multiplayer gameplay in v2. [Every capability and limit →](docs/CAPABILITIES.md)
 
-The full research download includes a separate built preview. To reconstruct it from source:
+The v0.1.0 full research download includes an earlier built preview. Build v2 from its preserved original capture and this repository:
 
 ```sh
 python3 build_local.py --archive "/path/to/archive" --output "../bo1z-preview-local"

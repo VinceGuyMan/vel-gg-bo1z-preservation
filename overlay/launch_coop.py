@@ -82,7 +82,7 @@ def admit_external_signaling(origin):
         available, result = False, None
     if not available:
         raise RuntimeError('External signaling health could not be verified. Check its address, HTTPS certificate and availability.') from None
-    if result.get('ok') is not True or result.get('service') != 'bo1z-local-signaling' or type(result.get('protocolVersion')) is not int or result.get('protocolVersion') != 1 or result.get('transportProtocol') != SIGNALING_PROTOCOL or result.get('gameAssets') is not False:
+    if result.get('ok') is not True or result.get('service') != 'bo1z-local-signaling' or type(result.get('protocolVersion')) is not int or result.get('protocolVersion') != 2 or result.get('transportProtocol') != SIGNALING_PROTOCOL or result.get('gameAssets') is not False:
         raise RuntimeError('External signaling health does not match this package protocol.')
 
 
@@ -202,8 +202,15 @@ def open_browser(url):
             for name in ('Google Chrome', 'Brave Browser', 'Microsoft Edge', 'Chromium'):
                 app = base / (name + '.app')
                 if app.is_dir():
-                    result = subprocess.run(['/usr/bin/open', '-a', str(app), url], check=False)
-                    if result.returncode == 0:
+                    # LaunchServices has failed to open a usable Brave session
+                    # in this project. The app's normal executable handles both
+                    # an existing browser and a cold launch without security
+                    # flags or a special browser profile.
+                    executable = app / 'Contents' / 'MacOS' / name
+                    if executable.is_file() and os.access(executable, os.X_OK):
+                        subprocess.Popen([str(executable), url], stdin=subprocess.DEVNULL,
+                                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                         start_new_session=True)
                         return
         print('Open the game URL above in Chrome, Brave, Edge or Chromium.', flush=True)
         return
@@ -320,6 +327,7 @@ def main(argv=None):
     snapshot = None
     registration = None
     diagnostics = None
+    discovery = None
     startup_outcome = None
     result_code = 0
     try:
@@ -359,6 +367,15 @@ def main(argv=None):
             args.signal_port = reserved[1].getsockname()[1]
         print(f'Using game port {args.port}' + (f' and signaling port {args.signal_port}.' if not remote else '.'), flush=True)
         launch_id = secrets.token_urlsafe(24)
+        from lan_discovery import LanDiscovery
+        # A local scanner exists for hosts and guests alike. Only the explicit
+        # LAN launcher advertises its own active rooms; public/Internet rooms
+        # and their private invitations never enter broadcast discovery.
+        discovery = LanDiscovery(signal_port=args.signal_port if not remote else None,
+                                 advertise=args.lan)
+        discovery.start()
+        for warning in discovery.warnings:
+            print(warning, flush=True)
         # Close a reservation only when launching the corresponding child. Health
         # launchId verification protects against a competing bind in this interval.
         if node is not None:
@@ -368,10 +385,12 @@ def main(argv=None):
             from export_assets import export_snapshot
             snapshot = Path(tempfile.mkdtemp(prefix='bo1z-assets-owned-'))
             manifest = export_snapshot(archive, snapshot, launch_id)
-            asset_command = [str(node), str(ROOT / 'serve_assets.cjs'), '--manifest', str(manifest), '--port', str(args.port)]
+            asset_command = [str(node), str(ROOT / 'serve_assets.cjs'), '--manifest', str(manifest), '--port', str(args.port),
+                             '--discovery-url', discovery.url]
         else:
             asset_command = [sys.executable, '-u', str(ROOT / 'serve_coop.py'), '--port', str(args.port),
-                             '--archive', str(archive), '--launch-id=' + launch_id]
+                             '--archive', str(archive), '--launch-id=' + launch_id,
+                             '--discovery-url', discovery.url]
         reserved[0].close()
         assets = child(asset_command, env=node_environment()) if node is not None else child(asset_command)
         processes.append(assets)
@@ -414,22 +433,24 @@ def main(argv=None):
             print('Game assets stay local. Keep this terminal open. No TURN, paid fallback or game relay is enabled.', flush=True)
         elif args.lan:
             addresses = local_lan_addresses()
-            print('LAN signaling enabled. Friends launch their own package and enter one of these signaling addresses, then your room code:', flush=True)
+            print('LAN signaling enabled. Host a room in Multiplayer; friends launch their package and select it from LAN games.', flush=True)
+            print('If network discovery is blocked, use one of these signaling addresses and your room code:', flush=True)
             for address in addresses:
                 print(f'  http://{address}:{args.signal_port}', flush=True)
             if not addresses:
                 print(f'  http://<this computer Wi-Fi/Ethernet IPv4 address>:{args.signal_port}', flush=True)
-            print('Choose the address on the same network as your friends. Physical LAN play has not been validated yet.', flush=True)
+            print('Choose the address on the same network as your friends. Shared gameplay remains experimental.', flush=True)
         elif remote:
             print('External signaling protocol verified. Only local game assets were started; the external service remains independently owned.', flush=True)
         else:
-            print('Signaling is local only. Use --lan when you want this computer to host LAN signaling.', flush=True)
+            print('LAN game browsing is enabled. Use Launch LAN Host or --lan when this computer hosts a discoverable room.', flush=True)
         if not args.no_open:
             try:
                 open_browser(url)
             except OSError:
                 print('Browser could not open automatically. Open the game URL above in Chrome or Edge.', flush=True)
         while True:
+            discovery.check()
             if registration is not None:
                 registration.check_stream()
             for process in processes:
@@ -449,6 +470,8 @@ def main(argv=None):
         result_code = 1
     finally:
         cleanup_failed = False
+        if discovery is not None:
+            cleanup_failed = not discovery.stop()
         for process in reversed(processes):
             try:
                 cleanup_failed = stop_child(process) is False or cleanup_failed

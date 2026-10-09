@@ -4,6 +4,8 @@ The [unchanged original archive](PRESERVATION.md) is the preservation baseline. 
 
 ## Build and launch
 
+For the extracted complete package, follow [Mac, Windows and LAN launch steps](LAUNCH.md). The commands below are for building from source or supplying a different archive path.
+
 From this repository, with Python 3.10+:
 
 ```sh
@@ -22,7 +24,7 @@ python3 launch_coop.py --archive "/path/to/archive"
 py -3 launch_coop.py --archive "F:\path\to\archive" --node "C:\Program Files\nodejs\node.exe"
 ```
 
-Keep the terminal open; Control-C stops owned services. Default ports prefer 8767/8768 and automatically select free alternatives when occupied. Explicit --port / --signal-port choices stay strict. All game assets remain on 127.0.0.1. Use the title’s Solo, Multiplayer or Settings controls. Solo retains ten original destinations; multiplayer starts Five / Classic.
+Keep the terminal open; Control-C stops owned services. Default ports prefer 8767/8768 and automatically select free alternatives when occupied. Explicit --port / --signal-port choices stay strict. All game assets remain on 127.0.0.1. Use the title’s Solo, Multiplayer or Settings controls. Solo retains ten original destinations; the experimental lobby offers captured maps and their available Classic/Horde options. Five / Classic is the first gameplay test target; other combinations remain unvalidated.
 
 ## Controller
 
@@ -34,11 +36,13 @@ Keep the terminal open; Control-C stops owned services. Default ports prefer 876
 | Jump / crouch / reload / switch | A/Cross · B/Circle · X/Square · Y/Triangle |
 | Use / revive · pause | D-pad Up · Start/Options |
 
-Click the original Play/Resume control with the mouse for browser pointer/audio permission. Deadzone, aim sensitivity, inversion and enable/disable are available. Input releases on disconnect/focus changes. View/Share in the original pause menu opens controller settings. Physical-controller gameplay is unvalidated.
+Click the original Play/Resume control with the mouse for browser pointer/audio permission. The new title Options include independent movement activation, diagonal assist, aim deadzone and speed, vertical/ADS multipliers, response curve, smoothing and inversion. View/Share opens the separate controller panel after the original game releases the pointer. Movement maps to digital WASD; analog walking and physical-controller gameplay remain unvalidated. See [CONTROLS.md](CONTROLS.md).
 
 ## Experimental joining
 
-The host opens **Launch LAN Host**, chooses Multiplayer and creates a room. Friends run their own matching local archive/overlay, enter the host signaling address and join using the room code/invitation. Build/map identities and chosen transport must match. Four slots are implemented; four native gameplay clients are unvalidated.
+The host opens **Launch Game** or **Launch LAN Host**, chooses **Multiplayer → Create lobby**, then selects map, mode and player limit. Friends run their own matching package and use **Multiplayer → Find LAN games → Join lobby**. A manual host signaling address plus room code/invitation remains available when UDP discovery is blocked. Use the host's LAN IP and actual printed port; `127.0.0.1` points to the player's own computer. [Step-by-step LAN instructions and troubleshooting](LAUNCH.md#host-a-lan-match)
+
+Build/map identities and chosen transport must match. Four slots are implemented; four native gameplay clients and co-op across all maps/modes remain unvalidated.
 
 WebRTC is the default. An optional player-hosted WSS/TCP relay can use a separately supplied pinned cloudflared 2026.10.0 executable:
 

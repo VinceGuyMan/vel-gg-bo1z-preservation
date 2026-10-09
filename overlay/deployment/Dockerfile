@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 # REVIEW TEMPLATE ONLY. Build context: this file, .dockerignore, and the exact
-# reviewed signaling.py plus ws_relay.py/ws_wire.py/ws-transport.js. Never use the original archive as a build context.
+# reviewed signaling.py and host_settings.py plus ws_relay.py/ws_wire.py/ws-transport.js. Never use the original archive as a build context.
 ARG PYTHON_IMAGE=python:3.12-slim
 FROM ${PYTHON_IMAGE}
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
-COPY --chown=65532:65532 signaling.py ws_relay.py ws_wire.py ws-transport.js /app/
+COPY --chown=65532:65532 signaling.py host_settings.py ws_relay.py ws_wire.py ws-transport.js /app/
 USER 65532:65532
 EXPOSE 8768
 # Current service catches KeyboardInterrupt; preserve its clean shutdown path.

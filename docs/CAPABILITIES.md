@@ -1,21 +1,20 @@
-# Capabilities and limits
+# What this preview establishes
 
-**Preservation first. Experimental improvements second.** This preserves the client deployment captured from [vel.gg/bo1z](https://vel.gg/bo1z/) on October 8, 2026. It does not claim authorship of the game or original browser port.
-
-| Area | What exists or was observed | What is not established |
+| Area | Evidence | Remaining |
 | --- | --- | --- |
-| Archive | Ten map destinations, listed game files, cinematics, engine/worker files, artwork, audio, shaders and available caches were captured. All 673 unique manifest transports passed decoded size/hash checks. | Unpublished source, operator infrastructure, missing optional upstream caches, every map's engine startup or complete playthroughs. |
-| Local replay | Original menu and ten map pages passed offline page checks. Five reached its original engine ready screen and cinematic. | That capture check did not enter interactive gameplay. Archive completeness does not certify every game mode. |
-| New title | Solo / Multiplayer / Settings, ten preserved Solo destinations, saved options and desktop/mobile layouts. | This is a desktop browser game; the responsive menu does not establish phone gameplay. |
-| Controller | Standard-mapped Xbox/PlayStation adapter, menu navigation, deadzone, look sensitivity, inversion and safe input release. | Physical controller gameplay. Left-stick movement maps to digital WASD; no rumble, platform-specific button artwork or unusual-pad compatibility is claimed. |
-| Original-engine co-op | Earlier builds ran two isolated clients on one Mac: separate spawns, shared movement, zombie damage/death, points, M14 purchase and down state. | Reliable complete matches, doors, completed revive, natural round progression, reload/rejoin or recovery. |
-| Physical Mac/PC LAN | Earlier runs established separate native players and guest movement received by the host. | Dependable control in both directions. A later host input test drained browser events without producing movement commands; cause remains unresolved. |
-| Public WSS relay | A public HTTPS/WSS fixture passed 152 checks, carrying exact generated packets among one host and three guest browser managers. | Separate-network Internet gameplay, game latency or reliability. All managers ran on one Mac; no game engine ran in that fixture. |
-| Four players / TURN | Four room slots, three synthetic guest routes and configurable WebRTC transport. | Four native players in a game, forced-TURN gameplay or a bundled TURN service. WSS/TCP is a separate optional transport, not TURN. |
-| Other maps | All ten captured Solo routes remain accessible. | Co-op runtime profiles beyond Five / Classic, or all-map multiplayer validation. |
+| Original engine co-op | Two native clients on one Mac exchanged packets, spawned separately and shared movement, zombie health/death, points, a weapon purchase and down state in earlier frozen builds. | Reliable end-to-end physical Mac/PC match, doors, revive, natural rounds and reconnect. |
+| Physical LAN | Earlier Mac/PC runs established distinct native players and replicated guest movement. One host-input attempt worked; a later one consumed browser events without producing backward native commands. | Dependable bidirectional control; input fault cause unresolved. The final diagnostic attempt stopped at Windows service readiness before gameplay. |
+| Public relay | Actual HTTPS/WSS browser fixture passed 152 checks: three guest star routes, unchanged 1/1200/65536-byte packets, authentication/route refusals, departure/host-close and cleanup. | These were packet fixtures on one Mac, not game sessions on separate networks. No Internet gameplay or latency claim. |
+| Four players | Room and transport slot capacity is four. Synthetic routing exercised three guests. | Four native game clients in one shared match. |
+| TURN | Configurable WebRTC path exists. | Separate-network forced-TURN gameplay; no TURN service is bundled or deployed. |
+| Maps and host options | Ten Classic maps and six Horde map identities can be selected, with 2–4 player capacity and archived Horde controls. | Native co-op gameplay on all combinations or live restart persistence. |
+| LAN discovery | UDP host discovery, automatic refresh, map/slot previews and joining by selection. Two isolated browsers connected through a real advertised room. | Every router/firewall and a dependable full native match. |
+| Title and controller | Solo/Multiplayer/Settings, independent stick tuning and local player profiles implemented; scoped source/input, browser and profile admission checks are recorded in [v2 validation](../evidence/controller-profile-validation.json). | Physical Xbox/PlayStation gameplay and full user-session testing. |
 
-Launchers target macOS and Windows with a Chromium browser and Python 3.10+. Windows additionally needs installed Node.js 22, 24 or 26 for asset delivery. This is not a signed native app, console port or validated mobile game. The [research download](DOWNLOAD.md) includes the capture and built preview; Git source archives contain neither game assets nor prebuilt engines.
+Full gameplay validation remains incomplete. This build adds LAN discovery, map/settings admission, menus, controller input and a distinct build/cache identity; it does not repair the archived engine's intermittent input fault. The ordinary proof8 engine is preserved; the diagnostic instrumented engine is excluded.
 
-The host runs the original authoritative game. Each player supplies the same local assets and matching build; assets are not streamed between players. WebRTC is the default. Optional player-hosted WSS needs a separately obtained supported tunnel tool; dropped relay members are terminal. No automatic fallback or host migration is provided.
+No completion claim is made for the original goal of dependable four-player Internet Zombies on all ten maps.
 
-The final preview passed packaging and title checks. Gameplay and public relay observations belong to earlier frozen builds; **this exact menu/controller preview has not run a new native or Internet match**. See [research](RESEARCH.md) and the [sanitized evidence summary](../evidence/research-summary.json).
+Gameplay and public-relay observations above belong to earlier frozen experimental builds. The final preview adds menus/controller input and changes identity labels; room admission and WebRTC connectivity were checked; no new native match or public-relay game is claimed for this exact preview.
+
+Controller movement remains digital WASD. Names and normalized PNG icons are room display metadata; native in-game name rendering is unverified. PNGs do not replace game art. See [CONTROLS.md](CONTROLS.md).

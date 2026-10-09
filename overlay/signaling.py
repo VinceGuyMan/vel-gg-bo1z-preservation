@@ -6,7 +6,7 @@ Default CORS: http://localhost:<port> and http://127.0.0.1:<port>.
 Use repeatable --allow-origin to replace that default with exact origins.
 Capabilities travel only in Authorization: Bearer headers, never URLs/logs.
 
-API: POST /coop/api/rooms {metadata,transport}; POST .../{code}/join
+API: POST /coop/api/rooms {metadata,transport,settings,title}; POST .../{code}/join
 {metadata,transport,invite?}.
 Create/join return room, member, capability, cursor and leaseSeconds; create
 also returns invite. Room codes are 30-bit locators, not authentication secrets.
@@ -22,9 +22,14 @@ epoch appear in public member objects. Event cursors are private to each member.
 Signals relay the RTC adapter's complete offer/answer bundle unchanged. A 409
 event_cursor_expired_resync_room is a visible session fault, never silent loss.
 
-Metadata requires exactly13 game fields used by this candidate. Rooms also pin
+Read-only GET .../{code}/configuration returns map/settings/transport summary,
+never admission credentials or member identities. GET /coop/lan/rooms exposes
+up to32 public summaries only to a loopback caller for the LAN discovery helper.
+Invite-required services do not advertise rooms through that endpoint.
+
+Metadata requires exactly14 game fields used by this candidate. Rooms also pin
 an explicit connection type: WebRTC (default) or experimental WebSocket relay.
-Create/join require that choice, and ready/start recheck all13 fields and choice.
+Create/join require that choice, and ready/start recheck all14 fields and choice.
 Relay tickets and first-frame auth bind it to exact Origin/member epoch/slot.
 No mid-match switch, relay resume or silent fallback is available.
 Readiness is client-declared; this service cannot verify native engine state.
@@ -57,10 +62,13 @@ import re
 import secrets
 import threading
 import time
+import unicodedata
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
 from ws_relay import Relay,Rejected,websocket,MAX_WS_ROOMS,MAX_WS_SOCKETS
+from host_settings import normalize_settings, settings_hash
+from player_profile import validate_profile
 PROTOCOL = 'bo1z-native-rtc-resume-v2'
 ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 MAX_BODY = 160 * 1024
@@ -74,7 +82,10 @@ GUEST_LEASE = 45
 HOST_LEASE = 60
 ROOM_LIFETIME = 3600
 DIGESTS = ('baseWasmSha256', 'patchedWasmSha256', 'patchManifestSha256',
-           'shellManifestSha256', 'mapManifestSha256', 'mapContentSha256')
+           'shellManifestSha256', 'mapManifestSha256', 'mapContentSha256', 'hostSettingsSha256')
+MAP_SLUGS = frozenset(('five', 'kino', 'riese', 'nacht', 'verruckt', 'shinonuma',
+                       'ascension', 'cotd', 'shangrila', 'moon'))
+HORDE_SLUGS = frozenset(('five', 'kino', 'riese', 'nacht', 'verruckt', 'shinonuma'))
 
 class APIError(Exception):
     def __init__(self, status, code):
@@ -97,7 +108,7 @@ def exact_keys(value, keys):
         fail(400, 'invalid_schema')
 
 
-PEER_FIELDS = ('overlayBuildId', 'protocolVersion', 'bridgeAbiVersion', 'patchSchemaRevision', 'baseWasmSha256', 'patchedWasmSha256', 'patchManifestSha256', 'shellManifestSha256', 'mapManifestSha256', 'mapContentSha256', 'mapSlug', 'mode', 'maxPlayers')
+PEER_FIELDS = ('overlayBuildId', 'protocolVersion', 'bridgeAbiVersion', 'patchSchemaRevision', 'baseWasmSha256', 'patchedWasmSha256', 'patchManifestSha256', 'shellManifestSha256', 'mapManifestSha256', 'mapContentSha256', 'mapSlug', 'mode', 'maxPlayers', 'hostSettingsSha256')
 
 def metadata(value):
     if type(value) is not dict or set(value) != set(PEER_FIELDS) or len(encoded(value)) > MAX_METADATA:
@@ -107,22 +118,34 @@ def metadata(value):
         if key in DIGESTS:
             valid = isinstance(item, str) and re.fullmatch('[0-9a-f]{64}', item)
         elif key == 'overlayBuildId':
-            valid = item == 'bo1z-portfix-v1'
+            valid = item == 'bo1z-lan-lobby-v2'
         elif key == 'mapSlug':
-            valid = item == 'five'
+            valid = isinstance(item, str) and item in MAP_SLUGS
         elif key == 'mode':
-            valid = item == 'classic'
+            valid = isinstance(item, str) and item in ('classic', 'horde')
         elif key == 'maxPlayers':
-            valid = type(item) is int and item == 4
+            valid = type(item) is int and 2 <= item <= 4
+        elif key == 'protocolVersion':
+            valid = type(item) is int and item == 2
         else:
             valid = type(item) is int and item == 1
         if not valid:
             fail(400, 'invalid_metadata')
+    if value['mode'] == 'horde' and value['mapSlug'] not in HORDE_SLUGS:
+        fail(400, 'invalid_metadata')
     return copy.deepcopy(value)
 
 
-def new_member(member_id, index, now):
+def player_profile(value):
+    try:
+        return validate_profile(value)
+    except ValueError:
+        fail(400, 'invalid_player_profile')
+
+
+def new_member(member_id, index, now, profile=None):
     return {'id': member_id, 'role': 'host' if index == 0 else 'guest',
+            'profile': profile or {'name': 'Player', 'icon': ''},
             'identity': {'ip': '10.0.0.' + str(index + 1), 'port': 3074},
             'epoch': secrets.token_urlsafe(16), 'capability': secrets.token_urlsafe(32),
             'engineReady': False, 'last': now, 'events': collections.deque(), 'bytes': 0, 'cursor': 0,
@@ -188,13 +211,14 @@ class Registry:
         self.require_invite = require_invite
         self.ice_issuer = ice_issuer or TransientICE()
         self.join_rates = collections.OrderedDict()
+        self.configuration_rates = collections.OrderedDict()
         self.rooms = {}
         self.create_rates = collections.OrderedDict()
         self.condition = threading.Condition(threading.RLock())
         self.relay = Relay(self)
 
     def public_member(self, member):
-        return {k: copy.deepcopy(member[k]) for k in ('id', 'role', 'identity', 'epoch', 'engineReady')}
+        return {k: copy.deepcopy(member[k]) for k in ('id', 'role', 'identity', 'epoch', 'engineReady', 'profile')}
 
     def push_group(self, peers, event):
         snapshots = [(peer, peer['events'].copy(), peer['bytes'], peer['cursor'], peer['discardedThrough']) for peer in peers]
@@ -211,7 +235,26 @@ class Registry:
         if member['role'] != 'host':
             members = [m for m in members if m['role'] == 'host' or m is member]
         return {'code': room['code'], 'metadata': copy.deepcopy(room['metadata']),
-                'transport': room['transport'], 'closed': room['closed'], 'startEpoch': room['startEpoch'], 'nativeStarted': room['nativeStarted'], 'members': [self.public_member(m) for m in members]}
+                'transport': room['transport'], 'title': room['title'], 'settings': copy.deepcopy(room['settings']),
+                'closed': room['closed'], 'startEpoch': room['startEpoch'], 'nativeStarted': room['nativeStarted'], 'members': [self.public_member(m) for m in members]}
+
+    def public_configuration(self, room):
+        """Room options only; never include capabilities, invitations or identities."""
+        return {'roomCode': room['code'], 'metadata': copy.deepcopy(room['metadata']),
+                'transport': room['transport'], 'memberCount': len(room['members']),
+                'started': bool(room['startEpoch']), 'closed': bool(room['closed']),
+                'title': room['title'], 'settings': copy.deepcopy(room['settings'])}
+
+    def configuration_rate(self, ip):
+        now = self.clock()
+        rate = self.configuration_rates.setdefault(ip, collections.deque())
+        while rate and now - rate[0] >= 60:
+            rate.popleft()
+        if len(rate) >= 30:
+            fail(429, 'configuration_rate_limit')
+        rate.append(now)
+        if len(self.configuration_rates) > 256:
+            self.configuration_rates.popitem(last=False)
 
     def joined(self, room, member, include_invite=False):
         result = {'room': self.view(room, member), 'member': self.public_member(member),
@@ -263,7 +306,7 @@ class Registry:
                     del room['members'][mid]
                     room['offers'].pop(mid, None)
                     self.push(host, {'type': 'member-left', 'member': self.public_member(member), 'reason': 'expired'})
-        for rates in (self.create_rates, self.join_rates):
+        for rates in (self.create_rates, self.join_rates, self.configuration_rates):
             for ip, rate in list(rates.items()):
                 if not rate or now - rate[-1] > 60:
                     del rates[ip]
@@ -286,12 +329,25 @@ class Registry:
         rate.append(now)
 
     def create(self, body, ip):
-        exact_keys(body, ('metadata','transport'))
+        if type(body) is not dict or set(body) - {'profile'} != {'metadata','transport','settings','title'}:
+            fail(400, 'invalid_schema')
+        profile = player_profile(body.get('profile', {'name':'Player','icon':''}))
         if body['transport'] not in ('webrtc','websocket-relay'):
             fail(400,'invalid_room_transport')
         if body['transport']=='websocket-relay' and sum(r.get('transport')=='websocket-relay' and not r['closed'] for r in self.rooms.values())>=MAX_WS_ROOMS:
             fail(503,'relay_room_capacity')
         meta = metadata(body['metadata'])
+        try:
+            settings = normalize_settings(body['settings'], map_slug=meta['mapSlug'])
+        except (TypeError, ValueError):
+            fail(400, 'invalid_host_settings')
+        if (settings['mode'] != meta['mode'] or settings['maxPlayers'] != meta['maxPlayers']
+                or settings_hash(settings) != meta['hostSettingsSha256']):
+            fail(409, 'host_settings_metadata_mismatch')
+        title = body['title']
+        if not isinstance(title, str) or len(title) > 32 or any(unicodedata.category(ch) in ('Cc', 'Cs') for ch in title):
+            fail(400, 'invalid_room_title')
+        title = title.strip() or 'Zombies lobby'
         now = self.clock()
         rate = self.create_rates.setdefault(ip, collections.deque())
         while rate and now - rate[0] >= 60:
@@ -307,15 +363,17 @@ class Registry:
             code = ''.join(secrets.choice(ALPHABET) for _ in range(6))
             if code not in self.rooms:
                 break
-        host = new_member('host', 0, now)
-        room = {'code': code, 'metadata': meta, 'transport':body['transport'], 'created': now, 'closed': False,
+        host = new_member('host', 0, now, profile)
+        room = {'code': code, 'metadata': meta, 'transport':body['transport'], 'settings': settings,
+                'title': title, 'created': now, 'closed': False,
                 'startEpoch': 0, 'nativeStarted': False, 'startedMembers': None, 'invite': secrets.token_urlsafe(32), 'members': {'host': host}, 'offers': {}}
         self.rooms[code] = room
         return self.joined(room, host, True)
 
     def join(self, room, body):
-        if type(body) is not dict or set(body) not in ({'metadata','transport'}, {'invite', 'metadata','transport'}):
+        if type(body) is not dict or set(body) - {'profile'} not in ({'metadata','transport'}, {'invite', 'metadata','transport'}):
             fail(400, 'invalid_schema')
+        profile = player_profile(body.get('profile', {'name':'Player','icon':''}))
         if body['transport']!=room['transport']:
             fail(409,'room_transport_mismatch')
         invite = body.get('invite')
@@ -331,7 +389,7 @@ class Registry:
         if len(room['members']) >= room['metadata']['maxPlayers']:
             fail(409, 'room_full')
         index = next(i for i in range(1, 4) if 'g' + str(i) not in room['members'])
-        member = new_member('g' + str(index), index, self.clock())
+        member = new_member('g' + str(index), index, self.clock(), profile)
         self.push(room['members']['host'], {'type': 'member-joined', 'member': self.public_member(member)})
         room['members'][member['id']] = member
         return self.joined(room, member)
@@ -422,13 +480,25 @@ class Registry:
         with self.condition:
             self.prune()
             if method == 'GET' and path == '/coop/health':
-                return {'ok': True, 'service': 'bo1z-local-signaling', 'protocolVersion': 1,
+                return {'ok': True, 'service': 'bo1z-local-signaling', 'protocolVersion': 2,
                         'transportProtocol': PROTOCOL, 'roomTransports':['webrtc','websocket-relay'],'gameAssets': False}
+            if method == 'GET' and path == '/coop/lan/rooms':
+                try:
+                    loopback = ipaddress.ip_address(ip).is_loopback
+                except (TypeError, ValueError):
+                    loopback = False
+                if not loopback:
+                    fail(403, 'loopback_discovery_required')
+                rooms = [] if self.require_invite else [self.public_configuration(room)
+                    for room in self.rooms.values() if not room['closed']][:32]
+                return {'ok': True, 'rooms': rooms, 'warnings': [], 'scannedAt': int(time.time() * 1000)}
             if method == 'POST' and path == '/coop/api/rooms':
                 return self.create(body, ip)
-            match = re.fullmatch('/coop/api/rooms/([A-Z2-9]{6})(?:/(join|signal|events|heartbeat|leave|close|ready|start|native-started|resume-request|resume|ice|ws-ticket))?', path)
+            match = re.fullmatch('/coop/api/rooms/([A-Z2-9]{6})(?:/(join|signal|events|heartbeat|leave|close|ready|start|native-started|resume-request|resume|ice|ws-ticket|configuration))?', path)
             if not match:
                 fail(404, 'endpoint_not_found')
+            if method == 'GET' and match[2] == 'configuration':
+                self.configuration_rate(ip)
             if method == 'POST' and match[2] == 'join':
                 now = self.clock()
                 rate = self.join_rates.setdefault(ip, collections.deque())
@@ -443,6 +513,8 @@ class Registry:
             if room is None:
                 fail(404, 'room_not_found_or_expired')
             action = match[2]
+            if method == 'GET' and action == 'configuration':
+                return self.public_configuration(room)
             if method == 'POST' and action == 'join':
                 return self.join(room, body)
             member = self.authenticate(room, token)

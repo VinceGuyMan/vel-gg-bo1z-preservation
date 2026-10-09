@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from urllib.parse import urlsplit
 import build_metadata
 from refresh_checksums import package_files,file_hash
-from serve_coop import HERE,BUILD,overlays
+from serve_coop import HERE,BUILD,overlays,coop_page
 
 MAPS={'five','kino','riese','nacht','verruckt','shinonuma','ascension','cotd','shangrila','moon'}
 def read_index(root):
@@ -101,9 +101,11 @@ def export_snapshot(archive,snapshot,launch_id):
     snapshot_entries[wasm_route]={'path':str(wasm),'bytes':wasm.stat().st_size,'sha256':file_hash(wasm),'mime':'application/wasm','encoding':''}
     health=json.dumps({'ok':True,'service':'bo1z-coop-assets','launchId':launch_id,'build':BUILD,'assetBackend':'node-http-stream-v1'}).encode()
     snapshot_entries['/coop/health']=save('/coop/health','application/json',health)
-    page=(root/'site/bo1z/five.html').read_text(encoding='utf-8').replace('</head>','<link rel="stylesheet" href="coop/lobby.css"></head>').replace('<script type="module" src="play.js">','<script type="module" src="coop/lobby.js"></script><script type="module" src="coop-play.js">')
-    coop=save('/bo1z/five','text/html; charset=utf-8',page.encode())
-    manifest={'schemaVersion':1,'build':BUILD,'launchId':launch_id,'roots':[str(root),str(snapshot),str(HERE.resolve())],'files':files,'parts':parts,'overlays':snapshot_entries,'coopPages':{'/bo1z/five':coop,'/bo1z/five.html':coop},'archiveChecksumIndexSha256':file_hash(root/'SHA256SUMS.txt')}
+    coop_pages={}
+    for slug in sorted(MAPS):
+        coop=save('/bo1z/'+slug,'text/html; charset=utf-8',coop_page(root,slug))
+        coop_pages['/bo1z/'+slug]=coop;coop_pages['/bo1z/'+slug+'.html']=coop
+    manifest={'schemaVersion':1,'build':BUILD,'launchId':launch_id,'roots':[str(root),str(snapshot),str(HERE.resolve())],'files':files,'parts':parts,'overlays':snapshot_entries,'coopPages':coop_pages,'archiveChecksumIndexSha256':file_hash(root/'SHA256SUMS.txt')}
     target=snapshot/'routes.json'
     with target.open('x',encoding='utf-8') as f:json.dump(manifest,f,separators=(',',':'))
     os.chmod(target,0o600)

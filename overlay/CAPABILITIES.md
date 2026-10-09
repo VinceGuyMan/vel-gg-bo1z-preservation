@@ -7,11 +7,14 @@
 | Public relay | Actual HTTPS/WSS browser fixture passed 152 checks: three guest star routes, unchanged 1/1200/65536-byte packets, authentication/route refusals, departure/host-close and cleanup. | These were packet fixtures on one Mac, not game sessions on separate networks. No Internet gameplay or latency claim. |
 | Four players | Room and transport slot capacity is four. Synthetic routing exercised three guests. | Four native game clients in one shared match. |
 | TURN | Configurable WebRTC path exists. | Separate-network forced-TURN gameplay; no TURN service is bundled or deployed. |
-| Maps | Ten captured Solo destinations and artwork are present. Five / Classic is the co-op starting profile. | Runtime validation of all ten maps; co-op profiles for the other nine. |
-| Title and controller | Solo/Multiplayer/Settings implemented; scoped source/unit and title-only browser checks are recorded in release validation. | Physical Xbox/PlayStation gameplay and full user-session testing. |
+| Maps and host options | Ten Classic maps and six Horde map identities can be selected, with 2–4 player capacity and archived Horde controls. | Native co-op gameplay on all combinations or live restart persistence. |
+| LAN discovery | UDP host discovery, automatic refresh, map/slot previews and joining by selection. Two isolated browsers connected through a real advertised room. | Every router/firewall and a dependable full native match. |
+| Title and controller | Solo/Multiplayer/Settings, independent stick tuning and local player profiles implemented; scoped source/unit and title-only browser checks are recorded in release validation. | Physical Xbox/PlayStation gameplay and full user-session testing. |
 
-Networking/gameplay research is paused at the user's request. This packaging pass changes menus, controller input and build/cache identity; it does not repair the archived engine's intermittent input fault. The ordinary proof8 engine is preserved; the diagnostic instrumented engine is excluded.
+Full gameplay validation remains incomplete. This build adds LAN discovery, map/settings admission, menus, controller input and a distinct build/cache identity; it does not repair the archived engine's intermittent input fault. The ordinary proof8 engine is preserved; the diagnostic instrumented engine is excluded.
 
 No completion claim is made for the original goal of dependable four-player Internet Zombies on all ten maps.
 
-Gameplay and public-relay observations above belong to earlier frozen experimental builds. The final preview adds menus/controller input and changes identity labels; no new native or public-relay execution is claimed for this exact preview.
+Gameplay and public-relay observations above belong to earlier frozen experimental builds. The final preview adds menus/controller input and changes identity labels; room admission and WebRTC connectivity were checked; no new native match or public-relay game is claimed for this exact preview.
+
+Controller movement remains digital WASD. Names and normalized PNG icons are room display metadata; native in-game name rendering is unverified. PNGs do not replace game art. See [CONTROLS.md](CONTROLS.md).

@@ -3,7 +3,7 @@
 export const RUNTIME_PINS = Object.freeze({
  baseWasmSha256:'61192df377020627f52fa7e9fd28047bd53662aa46e5e3cd6e7fad0c5c35cc98',
  patchedWasmSha256:'29c436447d467e63ae05346bdb5ed53c5f79ce0ab5e7493148200797b7129628',
- bridgeSourceSha256:'a756498b3c351a771fd1e3c77b08eebe0c32da48e034d3278e3f4c7c5918ba98',
+ bridgeSourceSha256:'10a153a72f020b2927cccf7d9e11e176adcbe7d9be0a78251d4ec0cd6ed1e7c8',
  observerSourceSha256:'4692475b3756ee37ae5ba2d2b90fcc39a7c2ab10448da47d41b5c86c4a93b116',
  nativeAdmissionSourceSha256:'854eb7e429c95b78e6d6b315de79827c9d618d59e191cd7a7d5f2d13461d9d3c'
 });

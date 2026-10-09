@@ -1,5 +1,7 @@
+import {getPlayerProfile,profileEmblem} from './player-profile.js';
 import {createVerifiedWSManager} from './ws-loader.js';
-import {validatePeerMetadata} from './peer-schema.js';
+import {validatePeerMetadata,PEER_FIELDS} from './peer-schema.js';
+import {MAP_SLUGS,settingsFromQuery,normalizeHostSettings,hostSettingsHash,contextMetadata} from './host-settings.js';
 import {createResumeController} from './resume-controller.js';
 import {runtimeEvidenceFor} from './runtime-attestation.js';
 import {createStatusCollector,readPrediction,browserEnvironment} from './status.js';
@@ -7,15 +9,14 @@ import {installStatusDownload} from './status-ui.js';
 import {observeSettledStart} from './start-gate.js';
 import {readJSONResponse,retryIdempotentRequest,isIdempotentAction} from './request-policy.js';
 
-// Only the explicit Five experiment receives this overlay. Archive controls own
+// Only explicit co-op map pages receive this overlay. Archive controls own
 // downloading, rendering, intro, sound activation and pointer lock.
 const query = new URLSearchParams(location.search);
-if (query.get('coop') === '1' && location.pathname.replace(/\/$/, '') === '/bo1z/five') installLobby();
+const mapSlug=location.pathname.replace(/\/$/,'').split('/').at(-1).replace(/\.html$/,'');
+if(query.get('coop')==='1'&&MAP_SLUGS.includes(mapSlug))installLobby();
 
 function installLobby() {
-  const FIELDS = ['overlayBuildId', 'protocolVersion', 'bridgeAbiVersion', 'patchSchemaRevision', 'baseWasmSha256',
-    'patchedWasmSha256', 'patchManifestSha256', 'shellManifestSha256', 'mapManifestSha256',
-    'mapContentSha256', 'mapSlug', 'mode', 'maxPlayers'];
+  const FIELDS=PEER_FIELDS;
   const DIGESTS = FIELDS.filter(name => name.endsWith('Sha256'));
   const state = { phase: 'idle', room: null, member: null, metadata: null, capability: null,
     service: '', transport:'webrtc',cursor: 0, readySent: false, hookReached: false, started: false,
@@ -34,16 +35,18 @@ function installLobby() {
   const panel = el('section', undefined, 'coop-panel'); panel.id = 'coop-lobby';
   panel.setAttribute('aria-label', 'Experimental co-op lobby');
   const heading = el('div', undefined, 'coop-heading');
-  const title = el('h2', 'Co-op experiment');
+  const title = el('h2', 'Zombies lobby');
   const collapse = button('Minimize', 'coop-collapse'); heading.append(title, collapse);
-  const note = el('p', 'Five · Classic. Prepare Five on this computer, then click Ready when loaded. The host starts when everyone is ready. Other maps and internet relay play have not been validated.', 'coop-note');
+  const note = el('p', mapSlug+' · '+(query.get('mode')??'classic')+'. Guests click Ready when loaded. The host starts when everyone is ready. Co-op across all maps and Internet play remain experimental.', 'coop-note');
   const service = el('input'); service.id = 'coop-service'; service.type = 'url'; service.value = query.get('signaling') || 'http://127.0.0.1:8768';
   service.autocomplete = 'off'; service.spellcheck = false;
-  const code = el('input'); code.id = 'coop-code'; code.maxLength = 6; code.placeholder = 'Room code'; code.autocomplete = 'off';
-  const invite = el('input'); invite.id = 'coop-invite'; invite.type = 'password'; invite.placeholder = 'Optional invitation'; invite.autocomplete = 'off';
+  const code = el('input'); code.id = 'coop-code'; code.maxLength = 6; code.value=query.get('room')??''; code.placeholder = 'Room code'; code.autocomplete = 'off';
+  const invite = el('input'); invite.id = 'coop-invite';
+  try{const saved=JSON.parse(sessionStorage.getItem('bo1z-lobby-invite-v1')??'null');sessionStorage.removeItem('bo1z-lobby-invite-v1');if(saved?.service===service.value&&saved?.roomCode===code.value&&typeof saved.invite==='string')invite.value=saved.invite;}catch{} invite.type = 'password'; invite.placeholder = 'Optional invitation'; invite.autocomplete = 'off';
   const label = (text, input) => { const node = el('label', text); node.append(input); return node; };
   const transportChoice=el('select');transportChoice.id='coop-transport';
   for(const[value,text]of[['webrtc','WebRTC (default)'],['websocket-relay','Experimental WebSocket relay']]){const option=el('option',text);option.value=value;transportChoice.append(option);}
+  transportChoice.value=query.get('transport')??'webrtc';
   const relayNote=el('p','Choose the same connection type as your host. The relay uses TCP through the host’s server; its tunnel provider can read relay traffic. Relay disconnects end that connection; no automatic fallback or reconnect.', 'coop-note');
   const form = el('div', undefined, 'coop-form');
   form.append(label('Connection type',transportChoice),label('Signaling server', service), label('Join room', code), label('Invitation', invite));
@@ -52,7 +55,7 @@ function installLobby() {
   const roomInfo = el('p', '', 'coop-room'); roomInfo.id = 'coop-room-info';
   const inviteInfo = el('details', undefined, 'coop-invitation'); inviteInfo.hidden = true;
   const invitationText = el('code', ''); inviteInfo.append(el('summary', 'Invitation for your friends'), invitationText);
-  const status = el('p', 'Host or join a room to prepare Five on this computer.', 'coop-status'); status.id = 'coop-status';
+  const status = el('p', 'Host or join a room to prepare this map on this computer.', 'coop-status'); status.id = 'coop-status';
   status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
   const members = el('ul', undefined, 'coop-members'); members.id = 'coop-members';
   const stats = el('p', '', 'coop-stats'); stats.id = 'coop-stats';
@@ -162,8 +165,8 @@ function installLobby() {
       const edge = edges.get(member.id)?.getStats();
       const recovering = recovery.get(member.id);
       const connection = recovering?.phase === 'refused' ? 'connection unavailable' : recovering?.phase === 'recovering' ? 'reconnecting' : isSelf ? 'this browser' : edge?.ready ? 'connected' : edge?.connectionState ?? 'connecting';
-      members.append(el('li', (member.role === 'host' ? 'Host' : 'Player ' + member.identity.ip.split('.').at(-1))
-        + ' · ' + connection + ' · ' + (member.engineReady ? 'ready' : 'preparing')));
+      const row=el('li'),fallback=member.role==='host'?'Host':'Player '+member.identity.ip.split('.').at(-1);
+      row.append(profileEmblem(member.profile),el('span',(member.profile?.name??fallback)+' · '+member.role+' · '+connection+' · '+(member.engineReady?'ready':'preparing')));members.append(row);
     }
     const values = [...edges.values()].map(edge => edge.getStats());
     stats.textContent = values.length ? values.length + ' peer link(s) · ' + values.reduce((n, v) => n + v.sentDatagrams, 0)
@@ -261,7 +264,7 @@ function installLobby() {
         if (state.member.role === 'guest' && localWarm(native) && !state.readySent) {
           message(state.prepared
             ? 'Click Ready to allow the game’s mouse and sound controls.'
-            : 'Five loaded. Click Ready to prepare this player.');
+            : 'Map loaded. Click Ready to prepare this player.');
         }
       }
       if (state.started && state.member.role === 'host' && !state.restartIssued) {
@@ -315,8 +318,25 @@ function installLobby() {
       state.service = url.origin;
       if(!['webrtc','websocket-relay'].includes(transportChoice.value))throw Error('Invalid connection type');
       state.transport=transportChoice.value;
-      const metadata = await fetchJSON('/bo1z/coop/peer-metadata.json');
-      state.metadata = validatePeerMetadata(metadata);
+      let options=settingsFromQuery(query,mapSlug);
+      if(role==='guest'){
+        const value=code.value.trim().toUpperCase();if(!/^[A-Z2-9]{6}$/.test(value))throw Error('Enter the six-character room code');
+        const configuration=await fetchJSON(state.service+'/coop/api/rooms/'+value+'/configuration');
+        options=normalizeHostSettings(configuration.settings,configuration.metadata?.mapSlug);
+        if(configuration.metadata.mapSlug!==mapSlug||options.mode!==(query.get('mode')??'classic')){
+          const destination=new URL('/bo1z/'+configuration.metadata.mapSlug,location.origin);destination.search=query.toString();
+          for(const[k,v]of Object.entries(options))destination.searchParams.set(k,typeof v==='boolean'?(v?'1':'0'):String(v));
+          destination.searchParams.set('room',value);destination.searchParams.set('autojoin','1');destination.searchParams.set('transport',configuration.transport);
+          location.replace(destination.href);return;
+        }
+        state.transport=configuration.transport;transportChoice.value=configuration.transport;
+        if(!['webrtc','websocket-relay'].includes(state.transport))throw Error('Invalid host connection type');
+        state.expectedMetadata=validatePeerMetadata(configuration.metadata);
+      }
+      state.settings=options;
+      const contexts=await fetchJSON('/bo1z/coop/contexts.json');
+      state.metadata=validatePeerMetadata(await contextMetadata(contexts,mapSlug,options));
+      if(state.expectedMetadata&&JSON.stringify(state.metadata)!==JSON.stringify(state.expectedMetadata))throw Error('Host uses a different build or map package. Both players need the same completed package.');
       try {
         const config = await fetchJSON('/bo1z/coop/network-config.json');
         if (config.iceServers !== undefined && !Array.isArray(config.iceServers)) throw Error('Invalid ICE server configuration');
@@ -329,15 +349,16 @@ function installLobby() {
         network = {iceServers: [], iceTransportPolicy: 'all'};
       }
       let response;
-      if (role === 'host') response = await api('', {metadata: state.metadata,transport:state.transport}, false);
+      if (role === 'host') response = await api('', {profile:getPlayerProfile(),metadata: state.metadata,transport:state.transport,settings:state.settings,title:(query.get('name')??'Zombies lobby').slice(0,32)}, false);
       else {
         const value = code.value.trim().toUpperCase(); if (!/^[A-Z2-9]{6}$/.test(value)) throw Error('Enter the six-character room code');
         state.room = {code: value};
-        response = await api('join', {metadata: state.metadata,transport:state.transport, ...(invite.value.trim() ? {invite: invite.value.trim()} : {})}, false);
+        response = await api('join', {profile:getPlayerProfile(),metadata: state.metadata,transport:state.transport, ...(invite.value.trim() ? {invite: invite.value.trim()} : {})}, false);
       }
       state.lastHeartbeat = performance.now(); state.leaseMs = Number(response.leaseSeconds) * 1000;
       if (!Number.isFinite(state.leaseMs) || state.leaseMs < 1000 || state.leaseMs > 60000) throw Error('Invalid membership lease');
       if(response.room?.transport!==state.transport||JSON.stringify(validatePeerMetadata(response.room.metadata))!==JSON.stringify(state.metadata))throw Error('Room connection type or build identity changed');
+      if(await hostSettingsHash(normalizeHostSettings(response.room.settings,mapSlug))!==state.metadata.hostSettingsSha256)throw Error('Room settings changed during admission');
       state.room = response.room; state.member = response.member; state.capability = response.capability; state.cursor = response.cursor;
       if(state.transport==='websocket-relay') {
         resumeManager=await createVerifiedWSManager({base:state.service,room:state.room,member:state.member,capability:state.capability,metadata:state.metadata,edges,api,validateMetadata:validatePeerMetadata,
@@ -366,7 +387,7 @@ function installLobby() {
           render();
         }});
       if (state.member.role === 'guest') await resumeManager.addPeer(state.room.members.find(item => item.role === 'host'));
-      globalThis.__coopConfig = {role: role === 'host' ? 'host' : 'client', ip: state.member.identity.ip, port: 3074, deferJoin: role === 'guest'};
+      globalThis.__coopConfig = {role: role === 'host' ? 'host' : 'client', ip: state.member.identity.ip, port: 3074, deferJoin: role === 'guest',settings:state.settings};
       if (response.invite) { invitationText.textContent = response.invite; inviteInfo.hidden = false; }
       state.phase = 'preparing'; message('Preparing saved game files and engine…');
       schedule(() => { void heartbeat(); }, 12000, true);
@@ -379,12 +400,12 @@ function installLobby() {
   }
   globalThis.__coopBeforeRun = async (module, args) => {
     if (!state.member || state.stopped) throw Error('Co-op membership is required before engine start');
-    if (args.some((value, index) => value === '+set' && args[index + 1] === 'fs_mods')) throw Error('Classic co-op requires original scripts without saved mods');
+    if (state.settings.mode==='classic'&&args.some((value, index) => value === '+set' && args[index + 1] === 'fs_mods')) throw Error('Classic co-op requires original scripts without saved mods');
     if (previousHook) await previousHook(module, args);
     module.__coopBaseWasmSha256 = state.metadata.baseWasmSha256;
     state.hookReached = true; eventLog('engine-hook');
     await tick();
-    if (state.member.role === 'guest') message('Preparing Five locally. Click Ready after it loads.');
+    if (state.member.role === 'guest') message('Preparing this map locally. Click Ready after it loads.');
   };
   globalThis.__coopSend = packet => {
     if (state.stopped) return false;
@@ -450,7 +471,7 @@ function installLobby() {
   leave.onclick = () => { void stop(); };
   window.addEventListener('pagehide', () => { void stop(false); }, {once: true});
   globalThis.__coopLobby = Object.freeze({snapshot: () => ({phase: state.phase, roomCode: state.room?.code ?? null,
-    transport:state.transport,role: state.member?.role ?? null, identity: state.member?.identity ? {...state.member.identity} : null,
+    settings:state.settings??null,mapSlug,transport:state.transport,role: state.member?.role ?? null, identity: state.member?.identity ? {...state.member.identity} : null,
     preparationStrategy: 'native-SP-preload', prepared: state.prepared, nativeConnectIssued: state.nativeConnectIssued,
     hookReached: state.hookReached, engineReady: state.readySent, started: state.started,
     startEpoch: state.room?.startEpoch ?? 0, nativeStartSettled: state.nativeSettled, nativeSettled: state.nativeSettled, nativeStartedSent: state.nativeStartedSent,
@@ -466,4 +487,6 @@ function installLobby() {
       readEnvironment:()=>browserEnvironment()}).report(options);
   }}});
   render();
+  if(query.get('autohost')==='1')void begin('host');
+  else if(query.get('autojoin')==='1')void begin('guest');
 }

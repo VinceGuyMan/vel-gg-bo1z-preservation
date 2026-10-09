@@ -6,13 +6,13 @@ export const LIMITS = Object.freeze({samples: 12, durationMs: 10000, intervalMs:
 export const KNOWN_LAYOUT = Object.freeze({
   baseWasmSha256: '61192df377020627f52fa7e9fd28047bd53662aa46e5e3cd6e7fad0c5c35cc98',
   patchedWasmSha256: '29c436447d467e63ae05346bdb5ed53c5f79ce0ab5e7493148200797b7129628',
-  bridgeSourceSha256:'a756498b3c351a771fd1e3c77b08eebe0c32da48e034d3278e3f4c7c5918ba98',
+  bridgeSourceSha256:'10a153a72f020b2927cccf7d9e11e176adcbe7d9be0a78251d4ec0cd6ed1e7c8',
   observerSourceSha256: '4692475b3756ee37ae5ba2d2b90fcc39a7c2ab10448da47d41b5c86c4a93b116',
-  bridgeBuild: 'bo1z-portfix-v1'
+  bridgeBuild: 'bo1z-lan-lobby-v2'
 });
 const META_FIELDS = ['overlayBuildId', 'protocolVersion', 'bridgeAbiVersion', 'patchSchemaRevision', 'baseWasmSha256',
  'patchedWasmSha256', 'patchManifestSha256', 'shellManifestSha256', 'mapManifestSha256',
- 'mapContentSha256', 'mapSlug', 'mode', 'maxPlayers'];
+ 'mapContentSha256', 'mapSlug', 'mode', 'maxPlayers', 'hostSettingsSha256'];
 const SHA = /^[0-9a-f]{64}$/;
 const PHASES = ['idle','connecting','preparing','joining','match','failed','left'];
 const SCREENS = ['landing','download','loading','ready','playing','error'];

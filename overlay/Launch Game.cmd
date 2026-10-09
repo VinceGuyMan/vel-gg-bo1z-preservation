@@ -9,10 +9,10 @@ echo Python 3.10 or newer is required. Install Python from https://www.python.or
 pause
 exit /b 1
 :launch_py
-py -3 "%~dp0launch_coop.py" %*
+py -3 "%~dp0launch_coop.py" --lan %*
 goto finished
 :launch_python
-python "%~dp0launch_coop.py" %*
+python "%~dp0launch_coop.py" --lan %*
 :finished
 set "launcher_status=%errorlevel%"
 if not "%launcher_status%"=="0" pause
