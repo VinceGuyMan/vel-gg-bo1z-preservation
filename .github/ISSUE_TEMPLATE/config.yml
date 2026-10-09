@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Read capabilities and known limits
+    url: https://github.com/VinceGuyMan/vel-gg-bo1z-preservation/blob/main/docs/CAPABILITIES.md
+    about: Check what was captured, demonstrated and left unverified.

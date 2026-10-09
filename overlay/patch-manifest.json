@@ -1,0 +1,86 @@
+{
+  "base_sha256": "61192df377020627f52fa7e9fd28047bd53662aa46e5e3cd6e7fad0c5c35cc98",
+  "build_id": "bo1z-coop-engine-proof-8",
+  "changes": [
+    {
+      "function_index": 825,
+      "name": "$NET_OutOfBandPrint_netsrc_t__netadr_t__char_const*_",
+      "original_body_sha256": "7d18beb042c5b98a78e1f577fcad79ffadbb84707c3aa8bdc76d0bc277b1054a"
+    },
+    {
+      "function_index": 2257,
+      "name": "$NET_OutOfBandData_netsrc_t__netadr_t__unsigned_char_const*__int_",
+      "original_body_sha256": "7535635e6cde4ad75946f0546897f73e7192656456bf49faa23f293006b2c172"
+    },
+    {
+      "function_index": 3100,
+      "name": "$NET_StringToAdr_char_const*__netadr_t*_",
+      "original_body_sha256": "6cce8d81356d12a67fde50ad27f2ac1f5adf675a7fb0aa231d781d499bc79bc3"
+    },
+    {
+      "function_index": 4025,
+      "name": "$Netchan_TransmitNextFragment_netchan_t*_",
+      "original_body_sha256": "22bf2701c26cededc3210a6e0954404455bef200ec87dd3d2454cf3696805361"
+    },
+    {
+      "function_index": 4026,
+      "name": "$NET_GetLoopPacket_netsrc_t__netadr_t*__msg_t*_",
+      "original_body_sha256": "4b37be8d53b9019dfd92ee2de2dafb4d9829f031ca052c005560e06d87752b95"
+    },
+    {
+      "function_index": 4313,
+      "name": "$ClientConnect_unsigned_int__unsigned_int_",
+      "original_body_sha256": "31c0eb447f1ec1f875a1122e75e789f5eac444215109a25d46abf7fd855d9b3e"
+    },
+    {
+      "function_index": 4886,
+      "name": "$main",
+      "original_body_sha256": "5b3c189025bed313b47d533646f6d39c7f72f82381224aed497d711a38f75064"
+    },
+    {
+      "function_index": 5386,
+      "name": "$SV_SendMessageToClient_msg_t*__client_t*__bool_",
+      "original_body_sha256": "fe5fb1a5b276e7d6ba864bdc6aa50fdd7038fcaaed33f3413211e5cfbca72721"
+    },
+    {
+      "function_index": 5811,
+      "name": "$Netchan_Transmit_netchan_t*__int__char*__bool_",
+      "original_body_sha256": "d0a05fbcd534a6c718b41fdd98205f9cb79dacda8eb4d6cf59cb798438e48505"
+    },
+    {
+      "function_index": 5813,
+      "name": "$Netchan_Process_netchan_t*__msg_t*_",
+      "original_body_sha256": "de8c8a00f37774971a72aebb9210c50016ea22221e606e70dfb613fd095445b2"
+    },
+    {
+      "function_index": 6547,
+      "name": "$CL_DownloadsComplete_int_",
+      "original_body_sha256": "9c74058e140644bfd043a25bf567939fe128f6217a9c8fdefa311b35e8b00ce5"
+    },
+    {
+      "function_index": 8448,
+      "name": "$SV_SendClientVoiceData_client_t*_",
+      "original_body_sha256": "e514847cf6e8b466320e2f706629c5106ecdfd6e529721079fceae365a196ee0"
+    },
+    {
+      "function_index": 11319,
+      "name": "$CL_Connect_f__",
+      "original_body_sha256": "004f453a605f38a8806725f20f99ac53f3fa92483cd6078bedaa25b2201f0240"
+    },
+    {
+      "function_index": 11391,
+      "name": "$BrowserFrame_void*_",
+      "original_body_sha256": "b51c496657f1fe9d0f536cdeb6edb8bce6e5a2c382c09bf3a811c400a416cdb2"
+    }
+  ],
+  "shared_pointer_address": 184721744,
+  "initial_heap_break": 184721760,
+  "packet_capacity": 65536,
+  "queue_slots": 32,
+  "remote_zombies_init": "Prepare Zombies mode using original internal setter before cold remote gamestate decoding; retain original client lifecycle.",
+  "limitations": [
+    "Experimental engine gate only. No playable co-op established.",
+    "Private IPv4 peers admitted and scheduled through the restored LAN classification; public-address authentication paths are preserved.",
+    "Default 32-actor, 10-bit entity configuration only."
+  ]
+}

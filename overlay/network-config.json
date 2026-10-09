@@ -1,0 +1,5 @@
+{
+  "iceServers": [],
+  "iceTransportPolicy": "all",
+  "runtimeIceSource": "membership"
+}

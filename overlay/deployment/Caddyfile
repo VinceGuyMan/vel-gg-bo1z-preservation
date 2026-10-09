@@ -1,0 +1,29 @@
+# REVIEW TEMPLATE ONLY. Set these variables before validation/run:
+# SIGNALING_DOMAIN: an explicitly chosen public DNS name, without scheme/path.
+# ACME_EMAIL: the operator's chosen certificate contact.
+# SIGNALING_UPSTREAM: one private backend; default fits Caddy on the host and
+# a signaling container published only on host127.0.0.1:8768.
+{
+    email {$ACME_EMAIL}
+    admin off
+}
+
+{$SIGNALING_DOMAIN} {
+    @signaling path /coop/health /coop/api/rooms /coop/api/rooms/* /coop/ws
+    handle @signaling {
+        request_body {
+            max_size 163840
+        }
+        # Preserve full paths, Origin and Authorization. The backend handles
+        # exact CORS. No proxy retries, caching, auth replacement or access log.
+        reverse_proxy {$SIGNALING_UPSTREAM:127.0.0.1:8768} {
+            transport http {
+                dial_timeout 2s
+                response_header_timeout 30s
+            }
+        }
+    }
+    handle {
+        respond "Not found" 404
+    }
+}

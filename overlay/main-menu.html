@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100e0d">
+<title>Black Ops Zombies · Preserved Edition</title>
+<link rel="stylesheet" href="main-menu.css">
+<script type="module" src="main-menu.js"></script>
+</head>
+<body data-menu-view="home">
+<div class="title-art" aria-hidden="true"></div>
+<div class="film-grain" aria-hidden="true"></div>
+<main class="menu-shell">
+<header class="masthead"><a class="edition" href="#home" id="home-link" aria-label="Return to title"><span class="edition-mark" aria-hidden="true">Ⅰ</span> Preserved edition</a><span class="collection-label">Local collection <span aria-hidden="true">/</span> 10 maps</span></header>
+<section id="home-view" class="menu-view home-view" aria-labelledby="game-title">
+<div class="title-lockup"><p class="overline">One more round.</p><h1 id="game-title"><span>BLACK OPS</span>ZOMBIES</h1><p class="title-description">The lights are still on.<br>The doors are still locked.</p></div>
+<nav class="choices" aria-label="Main menu">
+<button id="solo" type="button" data-menu-control aria-expanded="false" aria-controls="solo-view"><span class="choice-index" aria-hidden="true">01</span><span class="choice-label">Solo<small>Choose your battleground</small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
+<a id="multiplayer" data-menu-control href="/bo1z/five?coop=1&amp;renderer=webgl2"><span class="choice-index" aria-hidden="true">02</span><span class="choice-label">Multiplayer<small>Five · Classic <span class="experimental">Experimental</span></small></span><span class="choice-arrow" aria-hidden="true">↗</span></a>
+<button id="settings" type="button" data-menu-control aria-expanded="false" aria-controls="settings-view"><span class="choice-index" aria-hidden="true">03</span><span class="choice-label">Settings<small>Make yourself comfortable</small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
+</nav>
+<aside class="field-note"><span class="note-rule" aria-hidden="true"></span><p>Co-op and relay play are experimental.<br>Compatibility testing is ongoing.</p></aside>
+</section>
+<section id="solo-view" class="menu-view inner-view" hidden aria-labelledby="solo-title">
+<div class="section-heading"><div><p class="overline">Solo survival</p><h2 id="solo-title">Choose your map.</h2></div><button id="back" class="back-button" type="button" data-menu-control data-back>← Back</button></div>
+<p class="section-description">Ten places to make your last stand.</p>
+<div id="map-list" class="map-list" aria-label="Preserved solo maps"></div>
+<p class="small-note">Each map opens with its original loading screen and options.</p>
+</section>
+<section id="settings-view" class="menu-view inner-view" hidden aria-labelledby="settings-title">
+<div class="section-heading"><div><p class="overline">Options</p><h2 id="settings-title">Find your rhythm.</h2></div><button class="back-button" type="button" data-menu-control data-back>← Back</button></div>
+<div class="settings-layout">
+<fieldset class="settings-group"><legend>Game</legend>
+<label class="range-label" for="mouse-sensitivity">Mouse sensitivity <output id="mouse-sensitivity-value" for="mouse-sensitivity">5.0</output></label>
+<input id="mouse-sensitivity" type="range" min="0.5" max="15" step="0.5" value="5" data-menu-control>
+<label class="range-label" for="master-volume">Master volume <output id="master-volume-value" for="master-volume">50%</output></label>
+<input id="master-volume" type="range" min="0" max="1" step="0.05" value="0.5" data-menu-control>
+<label class="check-row"><span>Fullscreen on play<small>Your browser asks when you start.</small></span><input id="fullscreen" type="checkbox" data-menu-control></label>
+<p class="small-note">Changes apply across the collection.</p>
+</fieldset>
+<fieldset class="settings-group"><legend>Controller</legend>
+<label class="check-row"><span>Enable controller<small>Standard controllers supported.</small></span><input id="controller-enabled" type="checkbox" checked data-menu-control></label>
+<label class="range-label" for="controller-sensitivity">Look sensitivity <output id="controller-sensitivity-value" for="controller-sensitivity">1.0</output></label>
+<input id="controller-sensitivity" type="range" min="0.25" max="3" step="0.05" value="1" data-menu-control>
+<label class="range-label" for="controller-deadzone">Stick dead zone <output id="controller-deadzone-value" for="controller-deadzone">18%</output></label>
+<input id="controller-deadzone" type="range" min="0.05" max="0.4" step="0.01" value="0.18" data-menu-control>
+<label class="check-row"><span>Invert look</span><input id="controller-invert" type="checkbox" data-menu-control></label>
+<p id="controller-status" class="small-note" role="status">Connect a controller to navigate.</p>
+</fieldset>
+</div>
+<details class="control-guide"><summary data-menu-control>Controls reference</summary><div class="control-columns"><div><h3>Keyboard &amp; mouse</h3><p>W A S D — Move<br>Mouse — Look / fire / aim<br>Space — Jump · Shift — Sprint<br>R — Reload · F — Use / revive<br>Esc — Pause / release cursor</p></div><div><h3>Controller</h3><p>Left / right stick — Move / look<br>RT / R2 — Fire · LT / L2 — Aim<br>A / Cross — Jump · B / Circle — Crouch<br>X / Square — Reload · D-pad up — Use / revive<br>Start / Options — Pause</p></div></div><p class="small-note">Click the game’s Start or Resume control when your browser asks to capture the cursor.</p></details>
+<div class="settings-bottom"><button id="reset-settings" type="button" class="text-button" data-menu-control>Reset settings</button><span id="settings-status" class="small-note" role="status">Saved on this browser.</span></div>
+</section>
+<p id="free-test-note" class="launch-note" hidden>This room is hosted by a player. Connection quality depends on both networks.</p>
+<p id="menu-status" class="menu-status" role="status" aria-live="polite">Loading the collection…</p>
+<footer><span class="footer-caption">Keep the relic alive.</span><div class="navigation-hints" aria-label="Menu controls"><span><kbd>↑ ↓</kbd> Navigate</span><span><kbd>Enter / A</kbd> Select</span><span><kbd>Esc / B</kbd> Back</span></div></footer>
+</main>
+</body>
+</html>

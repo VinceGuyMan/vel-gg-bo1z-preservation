@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "kind": "sanitized-preservation-and-experimental-evidence-summary",
+  "captureDate": "2026-10-08",
+  "handoffDate": "2026-10-09",
+  "sourceSite": "https://vel.gg/bo1z/",
+  "archive": {
+    "capturedSuccessfulHTTPResources": 1808,
+    "capturedResponseBodyBytes": 6344680777,
+    "checksumIndexedFiles": 3656,
+    "checksumIndexedBytes": 6351964605,
+    "uniqueManifestTransportChecks": 673,
+    "allManifestDecodedSizesAndHashesPassed": true,
+    "baseManifests": 10,
+    "hordeManifests": 6,
+    "maps": [
+      "Five",
+      "Kino der Toten",
+      "Der Riese",
+      "Nacht der Untoten",
+      "Verrückt",
+      "Shi No Numa",
+      "Ascension",
+      "Call of the Dead",
+      "Shangri-La",
+      "Moon"
+    ],
+    "offlinePageChecks": {
+      "mapLinks": 10,
+      "failedResponses": 0,
+      "pageErrors": 0,
+      "externalRequestsBlocked": true
+    },
+    "originalFiveEngineCaptureCheck": {
+      "renderer": "WebGL2",
+      "readyScreenReached": true,
+      "cinematicDisplayed": true,
+      "interactiveGameplayEntered": false
+    },
+    "postExperimentFullArchiveVerification": {
+      "indexedFilesChecked": 3656,
+      "failures": 0
+    },
+    "completePlaythroughsAllMapsValidated": false,
+    "unpublishedDeploymentSourceOrOperatorInfrastructureIncluded": false
+  },
+  "engineIdentity": {
+    "capturedOriginalSha256": "61192df377020627f52fa7e9fd28047bd53662aa46e5e3cd6e7fad0c5c35cc98",
+    "ordinaryExperimentalSha256": "29c436447d467e63ae05346bdb5ed53c5f79ce0ab5e7493148200797b7129628",
+    "matchingCompleteDeploymentSourceRecovered": false,
+    "patchIsExactArchiveBackedBinaryReconstruction": true,
+    "patchIsFullDeploymentSourceCompilation": false,
+    "diagnosticInstrumentedEngineShipped": false
+  },
+  "previousExperimentalBuildObservations": {
+    "singleMacTwoIsolatedNativeClients": {
+      "separateSpawns": true,
+      "sharedMovementObserved": true,
+      "ordinaryGuestZombieDamageObserved": true,
+      "ordinaryGuestKillAndPointAwardObserved": true,
+      "m14Purchase500PointDebitObserved": true,
+      "originalDownStateObserved": true,
+      "completeMechanicsPlanPassed": false
+    },
+    "physicalMacWindowsLAN": {
+      "distinctNativePlayersObserved": true,
+      "guestMovementReceivedByHost": true,
+      "lan7GuestDisplacementGameUnits": 24.521073735200666,
+      "lan7HostCompletedBackwardCommandObserved": false,
+      "lan7OverallVerdictsPassed": false,
+      "dependableBidirectionalGameplayValidated": false,
+      "nativeInputFaultCauseEstablished": false
+    },
+    "finalDiagnostic": {
+      "serviceReadinessTimeoutSeconds": 20,
+      "nativePairStarted": false,
+      "ownedCleanupPassed": true,
+      "underlyingTimeoutCauseEstablished": false,
+      "furtherGameplayNetworkingTestsRun": false
+    },
+    "publicWSSPacketFixture": {
+      "actualBrowserChecksPassed": 152,
+      "exactGeneratedPacketRoutes": 26,
+      "exactPayloadBytes": 405226,
+      "testedPayloadSizes": [
+        1,
+        1200,
+        65536
+      ],
+      "browserManagers": 4,
+      "physicalMachines": 1,
+      "gameEngineRan": false,
+      "authenticationAndInvalidRoutingRefusalsPassed": true,
+      "departureAndHostClosePassed": true,
+      "normalOwnedCleanupPassed": true,
+      "separateInternetNetworkGameplayValidated": false,
+      "latencyOrReliabilityClaimed": false,
+      "forcedTurnValidated": false
+    }
+  },
+  "finalPreview": {
+    "build": "bo1z-shipping-preview-v1",
+    "compatibilitySha256": "0a7f7ae40bcfbc6f299f6feeb551fb7a6039eea1eb06e64d0c1e824ba1f073b0",
+    "desktopMobileTitleOnlyQA": true,
+    "simulatedStandardPadMenuQA": true,
+    "standardControllerPureChecks": 18,
+    "physicalControllerGameplayValidated": false,
+    "finalTitleSettingsStoresChecked": 20,
+    "finalSourceBuildByteIdenticalRuntimeFiles": 55,
+    "windowsDeliveryRuntimeChecksumsPassed": 54,
+    "windowsDeliverySourceChecksumsPassed": 62,
+    "windowsPackagingPassLauncherExecuted": false,
+    "newNativeOrPublicRelayMatchRunForExactPreview": false,
+    "fourNativePlayerGameplayValidated": false,
+    "allTenMapCoopRuntimeValidated": false,
+    "dependableInternetGameRelease": false,
+    "qaIdentityNote": "Initial title QA preceded the final settings correction; final dual-store DOM QA binds the final menu source and compatibility. Runtime reconstruction and final identity review bind the assembled final files."
+  },
+  "publicSummaryBoundary": {
+    "rawTestRecordsNotIncluded": true,
+    "privateMachineDetailsAndNativeStateNotIncluded": true,
+    "failedAdmissionsPreservedPrivately": true,
+    "claimScope": "Observed sub-results do not turn failed end-to-end gates into passes. Previous gameplay proofs do not validate the exact final preview."
+  },
+  "sourceRecordDigests": [
+    {
+      "record": "SHA256SUMS.txt",
+      "sha256": "b370176be5786afa4e5fb2f69558a9940b288718303672b2196b4438ea020fe2",
+      "bytes": 491796,
+      "rawRecordPublished": true,
+      "publicPath": "preservation/SHA256SUMS.capture.txt"
+    },
+    {
+      "record": "responses.json",
+      "sha256": "0c42013f632513bf6ac64f6535c43d9129b7f5f6b33125eebf1ea3f0db4d4dec",
+      "bytes": 926655,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "manifest-verification.json",
+      "sha256": "b9d66da400fe0411b2ccb268f396a15e451ad6f571d579a2d19b13defe566994",
+      "bytes": 225865,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "errors.json",
+      "sha256": "38b2a4604c41912dc2386bf5440ba2b515d5f0f090fedc7961eefa5ff33a863d",
+      "bytes": 3471,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "offline-smoke-test.json",
+      "sha256": "7376571f9189785df7ed0a8793dd648f6e3f80f5f8311c292904cd99a664a157",
+      "bytes": 1585,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "offline-five-engine-test.json",
+      "sha256": "57ae3006fa5807153f8bd79d3ca7d0ef7e51b9c7b28bcd012f959acd76461850",
+      "bytes": 328572,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "archive-integrity-after-candidate-v2-live.json",
+      "sha256": "b611985859203ae005f4a3366ce101f74b543d2af110256e976df90664846416",
+      "bytes": 365,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "lobby-production-retained-browser-validation.json",
+      "sha256": "72acfc980cd454bdd6abc00c6360d26254a7f5f9d3952b9a9774516ed50ad9c9",
+      "bytes": 444358,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "rtc4-controlled-combat-2.json",
+      "sha256": "fb27dcf9b28f2e493a9c2c02ec3d941c02995ef1176edddc3621912a15b35db2",
+      "bytes": 1056784,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "production-visible-kill-2.json",
+      "sha256": "d0206b9d9802cae1718c97de188cece708b502f0cd1fc9baf47792d1cc51a0b4",
+      "bytes": 2570287,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "production-m14-purchase-admission.json",
+      "sha256": "89f2a24b0ea13f345509e2a093d9e8e7b371cc1e9bf38947bd871f88cf2d0dc5",
+      "bytes": 3823,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "continuous-mechanics-3-independent-admission.json",
+      "sha256": "ec72c0c14205fe68774a4388be4c1dd3f42342eace20ceec7d215b571f2f0f74",
+      "bytes": 8625,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "physical-lan-v6-lan4-shared-spawn-review.json",
+      "sha256": "c958714a993424f06a3c078a69eeb193405682c39f4f2db733c0f5f1313dcf7c",
+      "bytes": 7586,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "physical-lan5-paired-input-review.json",
+      "sha256": "d6e896238c99b1453560c401e3e5f7a514439f05e580d460101e0fe60360f14c",
+      "bytes": 16580,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "physical-lan7-paired-input-fault-audit.json",
+      "sha256": "b999645ef6418135321ff5120e444c4bc120a1fa05d31f0acde8aa60b9e5fcd5",
+      "bytes": 460669,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "final-diagnostic-startup-outcome.json",
+      "sha256": "3f2d79290bd6f7c79ab44280f988c3e8bfd1bbd5a03fdc14045a41bc2a40117b",
+      "bytes": 2815,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "player-hosted-wss-v1-public-fixture-v5-actual-review.json",
+      "sha256": "10c3282abec11333dfafa91fcf8d17d6fc53b08aa366eb0eb5d58a0444e42a3a",
+      "bytes": 780,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "shipping-controller-preparation.json",
+      "sha256": "51afeab4bd31d50eb3ea2a6c36dabbb49014872dc394205eea752d8ca04471f4",
+      "bytes": 3099,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "title-qa-summary.json",
+      "sha256": "6af548910557aebf45e1b819f60b2b09b39ec992153ead24595aa4435d1d5d9d",
+      "bytes": 1786,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "title-dual-store-settings-qa.json",
+      "sha256": "3d9150c8ba4ece159670514a67ee5f5018ca285b36dbbf55bb8b6a7ea83f0154",
+      "bytes": 790,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "final-runtime-review.json",
+      "sha256": "66f90f1d9e6f16caf8b128d6570aaea75b64c3221bea307fd98e772e8f760a62",
+      "bytes": 6811,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "source-build-review.json",
+      "sha256": "8788c25433dfd4994b8ef7d69d16f70cbe7083f98dee07f87a13147c133039f8",
+      "bytes": 8235,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "PC-DELIVERY-RECEIPT.json",
+      "sha256": "f6ea8f5c651963dc6066c83ce476371956c63139e138a5c547a6359a310505e7",
+      "bytes": 1763,
+      "rawRecordPublished": false
+    },
+    {
+      "record": "RELEASE-VALIDATION.json",
+      "sha256": "6eefd7e15ef51beb8079d2b5513e7909a504be56b32c512615bf12bf67ca8e27",
+      "bytes": 2161,
+      "rawRecordPublished": false
+    }
+  ],
+  "publication": {
+    "kind": "source-only-preservation-handoff",
+    "overlayCodeAndEngineRecipeUnchangedFromPreview": true,
+    "publicDocumentationDiffersFromPrivatePreview": true,
+    "capturedGamePayloadIncluded": false,
+    "prebuiltEnginesIncluded": false
+  }
+}

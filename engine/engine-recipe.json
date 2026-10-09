@@ -1,0 +1,700 @@
+{
+  "schemaVersion": 1,
+  "baseSha256": "61192df377020627f52fa7e9fd28047bd53662aa46e5e3cd6e7fad0c5c35cc98",
+  "baseBytes": 9618325,
+  "targetSha256": "29c436447d467e63ae05346bdb5ed53c5f79ce0ab5e7493148200797b7129628",
+  "targetBytes": 9655130,
+  "operations": [
+    {
+      "copy": [
+        0,
+        7738
+      ]
+    },
+    {
+      "section": 3,
+      "parts": [
+        {
+          "hex": "8c"
+        },
+        {
+          "copy": [
+            7742,
+            11711
+          ]
+        },
+        {
+          "hex": "010601040000020706"
+        }
+      ]
+    },
+    {
+      "copy": [
+        19453,
+        125
+      ]
+    },
+    {
+      "section": 7,
+      "parts": [
+        {
+          "hex": "4c0e436f6f705f5061727365"
+        },
+        {
+          "copy": [
+            19581,
+            1
+          ]
+        },
+        {
+          "hex": "50763400af5b09436f6f705f53656e6400b45b0c436f6f705f5265636569766500b55b"
+        },
+        {
+          "copy": [
+            19582,
+            1780
+          ]
+        }
+      ]
+    },
+    {
+      "copy": [
+        21362,
+        10838
+      ]
+    },
+    {
+      "section": 10,
+      "parts": [
+        {
+          "hex": "8c5a"
+        },
+        {
+          "copy": [
+            32207,
+            248568
+          ]
+        },
+        {
+          "hex": "9305"
+        },
+        {
+          "copy": [
+            280777,
+            551
+          ]
+        },
+        {
+          "hex": "20002004418088e2c000200110b45b1a"
+        },
+        {
+          "copy": [
+            281328,
+            931377
+          ]
+        },
+        {
+          "hex": "ba05"
+        },
+        {
+          "copy": [
+            1212707,
+            645
+          ]
+        },
+        {
+          "hex": "20002002418088e2c000200110b45b2107"
+        },
+        {
+          "copy": [
+            1213352,
+            656892
+          ]
+        },
+        {
+          "hex": "16"
+        },
+        {
+          "copy": [
+            1870326,
+            3
+          ]
+        },
+        {
+          "hex": "200110af5b047f"
+        },
+        {
+          "copy": [
+            1870329,
+            2
+          ]
+        },
+        {
+          "copy": [
+            1870332,
+            1
+          ]
+        },
+        {
+          "hex": "20"
+        },
+        {
+          "copy": [
+            1870337,
+            3
+          ]
+        },
+        {
+          "hex": "10ad5b"
+        },
+        {
+          "copy": [
+            1870359,
+            1
+          ]
+        },
+        {
+          "copy": [
+            1870499,
+            788902
+          ]
+        },
+        {
+          "hex": "960c"
+        },
+        {
+          "copy": [
+            2659403,
+            1149
+          ]
+        },
+        {
+          "hex": "200020052008200241800b6a10b45b2101"
+        },
+        {
+          "copy": [
+            2660552,
+            392
+          ]
+        },
+        {
+          "hex": "1a"
+        },
+        {
+          "copy": [
+            2660966,
+            2
+          ]
+        },
+        {
+          "copy": [
+            2661120,
+            4
+          ]
+        },
+        {
+          "hex": "0210ae5b047f41010520"
+        },
+        {
+          "copy": [
+            2661124,
+            1
+          ]
+        },
+        {
+          "hex": "200120"
+        },
+        {
+          "copy": [
+            2661126,
+            1
+          ]
+        },
+        {
+          "hex": "10b55b"
+        },
+        {
+          "copy": [
+            2661132,
+            1
+          ]
+        },
+        {
+          "copy": [
+            2661135,
+            184038
+          ]
+        },
+        {
+          "hex": "fc06"
+        },
+        {
+          "copy": [
+            2845175,
+            335
+          ]
+        },
+        {
+          "hex": "0241ff073602885020"
+        },
+        {
+          "copy": [
+            2845510,
+            420773
+          ]
+        },
+        {
+          "hex": "95d002"
+        },
+        {
+          "copy": [
+            3266286,
+            39989
+          ]
+        },
+        {
+          "hex": "b35b"
+        },
+        {
+          "copy": [
+            3306277,
+            438092
+          ]
+        },
+        {
+          "hex": "c50b"
+        },
+        {
+          "copy": [
+            3744371,
+            1199
+          ]
+        },
+        {
+          "hex": "41"
+        },
+        {
+          "copy": [
+            3745572,
+            1
+          ]
+        },
+        {
+          "hex": "6a10b05b45"
+        },
+        {
+          "copy": [
+            3745576,
+            91
+          ]
+        },
+        {
+          "hex": "10b05b45"
+        },
+        {
+          "copy": [
+            3745673,
+            604606
+          ]
+        },
+        {
+          "hex": "8009"
+        },
+        {
+          "copy": [
+            4350281,
+            808
+          ]
+        },
+        {
+          "hex": "200120052007200441b00b6a10b45b1a"
+        },
+        {
+          "copy": [
+            4351089,
+            650
+          ]
+        },
+        {
+          "hex": "d712"
+        },
+        {
+          "copy": [
+            4351741,
+            1766
+          ]
+        },
+        {
+          "hex": "200120052004200341f0116a10b45b1a"
+        },
+        {
+          "copy": [
+            4353507,
+            329
+          ]
+        },
+        {
+          "hex": "20022009200c200341f0116a10b45b1a"
+        },
+        {
+          "copy": [
+            4353836,
+            835261
+          ]
+        },
+        {
+          "hex": "cdd401"
+        },
+        {
+          "copy": [
+            5189100,
+            892
+          ]
+        },
+        {
+          "hex": "200010b25b"
+        },
+        {
+          "copy": [
+            5189992,
+            1080587
+          ]
+        },
+        {
+          "hex": "c207"
+        },
+        {
+          "copy": [
+            6270581,
+            885
+          ]
+        },
+        {
+          "hex": "41012005418088e2c000200110b45b1a"
+        },
+        {
+          "copy": [
+            6271466,
+            974124
+          ]
+        },
+        {
+          "hex": "c104"
+        },
+        {
+          "copy": [
+            7245592,
+            374
+          ]
+        },
+        {
+          "hex": "41"
+        },
+        {
+          "copy": [
+            7245968,
+            1
+          ]
+        },
+        {
+          "hex": "6a10b05b"
+        },
+        {
+          "copy": [
+            7245972,
+            2
+          ]
+        },
+        {
+          "hex": "200041106a10b15b"
+        },
+        {
+          "copy": [
+            7245974,
+            14892
+          ]
+        },
+        {
+          "hex": "87e801"
+        },
+        {
+          "copy": [
+            7260869,
+            28032
+          ]
+        },
+        {
+          "hex": "d8b0b10628020041044f0d0141"
+        },
+        {
+          "copy": [
+            7288901,
+            109303
+          ]
+        },
+        {
+          "copy": [
+            1870244,
+            256
+          ]
+        },
+        {
+          "copy": [
+            2660944,
+            192
+          ]
+        },
+        {
+          "hex": "9f0201057f200141004110fc0b00034041002103410021040240034020002d000022054130490d01200541394b0d012003410a6c200541306b6a220341ff014b044041000f0b200441016a2104200041016a21000c000b0b200445044041000f0b200141046a20026a20033a0000200241016a220241044904402005412e47044041000f0b200041016a21000c010b0b41821821062005413a460440200041016a210041002106410021040240034020002d000022054130490d01200541394b0d012006410a6c200541306b6a220641ffff034b044041000f0b200441016a2104200041016a21000c000b0b200445044041000f0b200645044041000f0b0b2005044041000f0b20014104360200200120064108742006410876723b010841010b6501027f2000280200410246044041010f0b2000280200410447044041000f0b20002d0004210120002d000521022001410a46200141ff004672044041010f0b200141c00146200241a8014671044041010f0b200141ac0146200241104f712002411f4d710b850101037f41d0c28ad800fe1002002203044020034101fe1e02341a0b200028020041044704400f0b200010b05b4504400f0b41d4f7a9c00028020022014504400f0b20012d001841014704400f0b41d0f7a9c00028020022024504400f0b20030440200320022d00183602380b20024101410010d80220030440200320022d001836023c0b0b7701027f200004400f0b41d0f7a9c00028020022014504400f0b20012d00184504400f0b41d4f7a9c00028020022014504400f0b20012d00184504400f0b41d8b0b10628020041094704400f0b200010d9022102200228021041044704400f0b200241106a10b05b4504400f0b41f0a6f01441003a00000b5201027f024041d8b0b1062802004104490d0041d4f7a9c0002802002200450d0020002d00184101470d0041eca6f0142802002201450d0020012802104104470d00200141106a10b05b450d000f0b10cf210bc50101037f41d0c28ad800fe100200220445044041000f0b2003280200410447044041000f0b2001418080044b044020044101fe1e02101a41000f0b0340200441004101fe4802140d000b2004fe100208210520052004fe10020c6b41204f044020044101fe1e02101a20044100fe17021441000f0b200441c0006a2005411f7141a080046c6a21062006200036020020062001360204200641086a20034110fc0a0000200641186a20022001fc0a00002004200541016afe17020820044100fe17021441010bed0101057f41d0c28ad800fe100200220345044041000f0b20004504402003fe10023041014604404100200341c09880036a10a30220034100fe1702300b0b200041014b044041000f0b200341186a2000410c6c6a21042004fe100204210520052004fe10020046044041000f0b200341c08880016a200041808880016c6a2005411f7141a080046c6a2106200628020421072007418080044b200720022802104b72044020044101fe1e02081a2004200541016afe17020441000f0b2001200641086a4110fc0a00002002280208200641186a2007fc0a0000200220073602142004200541016afe17020441010b"
+        }
+      ]
+    },
+    {
+      "section": 11,
+      "parts": [
+        {
+          "copy": [
+            7398208,
+            1404161
+          ]
+        },
+        {
+          "hex": "60"
+        },
+        {
+          "copy": [
+            8802370,
+            12154
+          ]
+        }
+      ]
+    },
+    {
+      "section": 0,
+      "parts": [
+        {
+          "copy": [
+            8814528,
+            27
+          ]
+        },
+        {
+          "functionNames": [
+            8814559,
+            791806
+          ],
+          "append": [
+            "Coop_OriginalAdr",
+            "Coop_OriginalGet",
+            "Coop_ParseIPv4",
+            "Coop_IsLAN",
+            "Coop_PrepareZombiesLAN",
+            "Coop_FinishWarmRemote",
+            "Coop_StartupFrontEnd",
+            "Coop_Send",
+            "Coop_Receive"
+          ]
+        },
+        {
+          "locals": 11702,
+          "entries": {
+            "11695": [
+              "text",
+              "addr",
+              "octet",
+              "value",
+              "digits",
+              "ch",
+              "port"
+            ],
+            "11696": [
+              "addr",
+              "first",
+              "second"
+            ],
+            "11697": [
+              "addr",
+              "boot",
+              "mode",
+              "state"
+            ],
+            "11698": [
+              "localClient",
+              "dvar",
+              "connection"
+            ],
+            "11699": [
+              "boot",
+              "connection"
+            ],
+            "11700": [
+              "sock",
+              "length",
+              "data",
+              "to",
+              "state",
+              "write",
+              "slot"
+            ],
+            "11701": [
+              "sock",
+              "from",
+              "msg",
+              "state",
+              "head",
+              "read",
+              "slot",
+              "length"
+            ]
+          }
+        },
+        {
+          "copy": [
+            9606365,
+            11960
+          ]
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "target": "ordinary co-op proof8; diagnostic build excluded",
+    "imports": 170,
+    "baseDefinedFunctions": 11523,
+    "targetDefinedFunctions": 11532,
+    "changedOriginalFunctions": [
+      {
+        "functionIndex": 825,
+        "definedIndex": 655,
+        "baseBodySha256": "0cb46964a22e68e5e5a56451e6d5e9e0df911d8316a320ba12d8228edada4b2f",
+        "targetBodySha256": "4b3da97bd7a571713fbfd1d05d6aa764b2ec93987b0a0af5ba93f9f9ceced67c"
+      },
+      {
+        "functionIndex": 2257,
+        "definedIndex": 2087,
+        "baseBodySha256": "2fa56e17c3d427d2c092af3ef9d7701df4415404537bb215b2f44e1a536470c4",
+        "targetBodySha256": "b64170835c814e15f0b91ff0fe2441bdbc664ffda07261621cc7edbee0731ec3"
+      },
+      {
+        "functionIndex": 3100,
+        "definedIndex": 2930,
+        "baseBodySha256": "cb356a00b740f824a822dab776b2b5f8a695e34a44ef923e85635f3f0841d673",
+        "targetBodySha256": "2af63c1eb4caa5ad425380f4d6d753a6ca6b970c200f16fffe6fba4a9a7fdd6e"
+      },
+      {
+        "functionIndex": 4025,
+        "definedIndex": 3855,
+        "baseBodySha256": "d4830677be70df2f54754456a25c0b9fc752d6609a83074eaa181be27d724854",
+        "targetBodySha256": "9fde5b13401555b5403cf5773ac95032452a358f54bc72ac4f590d4bfa64b893"
+      },
+      {
+        "functionIndex": 4026,
+        "definedIndex": 3856,
+        "baseBodySha256": "721244cdbea6b15c136851070828345031cd32869a769ecf30af20e7d0356df8",
+        "targetBodySha256": "ace644fdfe96bcd718a6078e028200d3763c1f96fc64c0e18a39dd4241e23656"
+      },
+      {
+        "functionIndex": 4313,
+        "definedIndex": 4143,
+        "baseBodySha256": "f157d726bf55ea29f75707bc45865d1b70b1ff68a010046c776b32d69cf31e4c",
+        "targetBodySha256": "0f5c923cf7146a3618dc64b81edc836b2f9f54a975c0727421d444171cc640df"
+      },
+      {
+        "functionIndex": 4886,
+        "definedIndex": 4716,
+        "baseBodySha256": "f92dc059f68a44db974cc4c1532cf036d89cd2e113bb84db739ab27dde5b848c",
+        "targetBodySha256": "71874522e332026c8ee57ff01769b2ca3b847cf0cb4f2fe52b87ebce4f58400d"
+      },
+      {
+        "functionIndex": 5386,
+        "definedIndex": 5216,
+        "baseBodySha256": "f90fe7c8165c066a6a8a2b7e1f3656972129b9b01609b9163fa6e7d98e510182",
+        "targetBodySha256": "44551882504d5c957ae1837a2c8987bad27faacbad86ee7060a60ad2ade1163c"
+      },
+      {
+        "functionIndex": 5811,
+        "definedIndex": 5641,
+        "baseBodySha256": "44e655b6423795fa8e55f2bc75b4dc24cf8c969267a20a7933cf881ab3d901d3",
+        "targetBodySha256": "a5d23542506c0bf5acfb322c8f83b073559cb8ab8ee19f5de302f86b70bd3756"
+      },
+      {
+        "functionIndex": 5813,
+        "definedIndex": 5643,
+        "baseBodySha256": "6cd47b15307c93984cc79e7290c655256d45ba5c5c632a56e7df25a311d4136c",
+        "targetBodySha256": "2acdebe3957c924533af068e24a8fbfc1d63fb18a49027d190d8191efd0cc01a"
+      },
+      {
+        "functionIndex": 6547,
+        "definedIndex": 6377,
+        "baseBodySha256": "48759db87a3de4807c5db13ef794701987fe0db80de48bc586e8b82aae32e8d3",
+        "targetBodySha256": "cafc4a17eee748b0853977272c813ae4c07629e5d29844160e6f7e019b2c4dc5"
+      },
+      {
+        "functionIndex": 8448,
+        "definedIndex": 8278,
+        "baseBodySha256": "e4f242bbafb10ed62aeee24c1b7d2e34bb1314853bbacd0c9c205c515b7e5042",
+        "targetBodySha256": "40921e211a528708c2003f91603638b90db5184683b101c2c89901261b5028d3"
+      },
+      {
+        "functionIndex": 11319,
+        "definedIndex": 11149,
+        "baseBodySha256": "67399e14326324ff9d0320de0de6145ff5862aa5d9316505b532a98952367b4c",
+        "targetBodySha256": "7f9f4e6d02964516a5d671af45bc9a84faa1766b23dcdadad70cb42764b5d644"
+      },
+      {
+        "functionIndex": 11391,
+        "definedIndex": 11221,
+        "baseBodySha256": "fcd11af78a0dbe0f5fb9f341f97fcc60c677dc8901c47d03fb47263239de0396",
+        "targetBodySha256": "42da0eb551e387e45a154545805019770039cbb3e8c6fe2ad3253e81dee98af1"
+      }
+    ],
+    "appendedFunctions": [
+      {
+        "functionIndex": 11693,
+        "copiedBaseFunctionIndex": 3100
+      },
+      {
+        "functionIndex": 11694,
+        "copiedBaseFunctionIndex": 4026
+      },
+      {
+        "functionIndex": 11695,
+        "newHelper": true,
+        "bodySha256": "84ed33de2b06db3ec09891f78af89aa8555df9f98e5b12571ae42dbbf3a45b07"
+      },
+      {
+        "functionIndex": 11696,
+        "newHelper": true,
+        "bodySha256": "7b810890c336e2785f3c600b8acf7b249d29cb37b70c85fb381efc8688f25827"
+      },
+      {
+        "functionIndex": 11697,
+        "newHelper": true,
+        "bodySha256": "22ac5d1d1220116c683f415779c4aec2a9abe233b763ce12d4464e3b4d946eda"
+      },
+      {
+        "functionIndex": 11698,
+        "newHelper": true,
+        "bodySha256": "9e0983a7f193493220f0fb8a0d0ea52212d7cc4fdb8e9b0228cef64c28a54bdc"
+      },
+      {
+        "functionIndex": 11699,
+        "newHelper": true,
+        "bodySha256": "63403df51b0a83ae40518fdafdffe3d33f3aba08899ce50f9db13da36dd9a889"
+      },
+      {
+        "functionIndex": 11700,
+        "newHelper": true,
+        "bodySha256": "3eb2fe0a5f47552c64a1f01c70245053e55cc62f01aeb45f50228242cc19cf62"
+      },
+      {
+        "functionIndex": 11701,
+        "newHelper": true,
+        "bodySha256": "5cf4337a695534db3f36b6f4dc5cce10ef60fa91b7650624c2e53b5f07b75db5"
+      }
+    ],
+    "sharedPointerAddress": 184721744,
+    "initialHeapBreak": 184721760,
+    "licenseStatus": "Matching deployed source and redistribution permission not established"
+  }
+}

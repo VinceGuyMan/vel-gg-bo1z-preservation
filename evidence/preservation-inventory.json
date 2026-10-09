@@ -1,0 +1,76 @@
+{
+  "schema": "bo1z-preservation-inventory/v1",
+  "origin": "https://vel.gg/bo1z/",
+  "capture_date": "2026-10-08",
+  "capture_timezone": "America/New_York",
+  "capture_first_utc": "2026-10-08T21:29:09.109129+00:00",
+  "capture_last_utc": "2026-10-08T21:33:04.599099+00:00",
+  "integrity": {
+    "all_listed_files_sha256_verified": true,
+    "checksum_index_sha256": "b370176be5786afa4e5fb2f69558a9940b288718303672b2196b4438ea020fe2",
+    "listed_file_count": 3656,
+    "listed_file_bytes": 6351964605,
+    "unlisted_files": "Not covered by the capture index; ignored."
+  },
+  "captured_resources": {
+    "successful_http_response_count": 1808,
+    "saved_response_body_bytes": 6344680777,
+    "manifest_verification_record_count": 673,
+    "recorded_manifest_checks_all_passed": true,
+    "recorded_source_error_count": 22,
+    "recorded_source_error_statuses": [
+      "404"
+    ]
+  },
+  "maps": [
+    {
+      "slug": "five",
+      "name": "Five"
+    },
+    {
+      "slug": "kino",
+      "name": "Kino der Toten"
+    },
+    {
+      "slug": "riese",
+      "name": "Der Riese"
+    },
+    {
+      "slug": "nacht",
+      "name": "Nacht der Untoten"
+    },
+    {
+      "slug": "verruckt",
+      "name": "Verrückt"
+    },
+    {
+      "slug": "shinonuma",
+      "name": "Shi No Numa"
+    },
+    {
+      "slug": "ascension",
+      "name": "Ascension"
+    },
+    {
+      "slug": "cotd",
+      "name": "Call of the Dead"
+    },
+    {
+      "slug": "shangrila",
+      "name": "Shangri-La"
+    },
+    {
+      "slug": "moon",
+      "name": "Moon"
+    }
+  ],
+  "capture_indexes": {
+    "metadata/responses.json": "0c42013f632513bf6ac64f6535c43d9129b7f5f6b33125eebf1ea3f0db4d4dec",
+    "metadata/responses.jsonl": "1094d6eca309cecca182d5b0475130721283b5deb98f8f4cce46d3a2ae540878",
+    "metadata/transport-groups.json": "b1087638ed2238601c495b272c3b66930d82bea858f83b3f3f8f48af846ed985",
+    "metadata/manifest-verification.json": "b9d66da400fe0411b2ccb268f396a15e451ad6f571d579a2d19b13defe566994",
+    "metadata/errors.json": "38b2a4604c41912dc2386bf5440ba2b515d5f0f090fedc7961eefa5ff33a863d",
+    "evidence/live-maps.json": "f25c1c0f1e061f38e307755ca4be3b9b42ca80a14134d68c93038fc917e4d8e7"
+  },
+  "scope": "Exact listed capture bytes; not proof of complete site history or gameplay."
+}

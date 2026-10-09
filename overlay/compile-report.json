@@ -1,0 +1,19 @@
+{
+  "bytes": 9655130,
+  "sha256": "29c436447d467e63ae05346bdb5ed53c5f79ce0ab5e7493148200797b7129628",
+  "validated": true,
+  "exports": [
+    {
+      "name": "Coop_ParseIPv4",
+      "kind": "function"
+    },
+    {
+      "name": "Coop_Send",
+      "kind": "function"
+    },
+    {
+      "name": "Coop_Receive",
+      "kind": "function"
+    }
+  ]
+}

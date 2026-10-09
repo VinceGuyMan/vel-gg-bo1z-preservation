@@ -1,0 +1,34 @@
+{
+  "schema": "bo1z-publication-checks/v1",
+  "date": "2026-10-09",
+  "scope": "Public source handoff; no new native or network gameplay run.",
+  "repository": {
+    "source_hash_manifest": "SOURCE-SHA256SUMS.txt",
+    "independently_pinned_capture_index": true,
+    "approved_overlay_sources": 52,
+    "game_payload_or_prebuilt_engine_included": false,
+    "python_sources_parsed": 17,
+    "relative_document_links_resolved": true,
+    "authored_svg_banner_visually_reviewed": true
+  },
+  "bounded_checker_validation": {
+    "checks_passed": 7,
+    "unchanged_tree_accepted": true,
+    "changed_readme_rejected": true,
+    "extra_binary_rejected": true,
+    "extra_text_file_rejected": true,
+    "changed_capture_index_even_with_updated_source_manifest_rejected": true,
+    "both_tools_parse_with_python_3_10_grammar": true,
+    "inventory_unicode_json_ascii_safe": true
+  },
+  "local_reconstruction": {
+    "passed": true,
+    "original_wasm_sha256": "61192df377020627f52fa7e9fd28047bd53662aa46e5e3cd6e7fad0c5c35cc98",
+    "reconstructed_wasm_sha256": "29c436447d467e63ae05346bdb5ed53c5f79ce0ab5e7493148200797b7129628",
+    "peer_compatibility_sha256": "0a7f7ae40bcfbc6f299f6feeb551fb7a6039eea1eb06e64d0c1e824ba1f073b0",
+    "five_classic_saved_asset_bytes_rehashed": true,
+    "archive_modified": false,
+    "game_engine_executed": false,
+    "network_service_launched": false
+  }
+}

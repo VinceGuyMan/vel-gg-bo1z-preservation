@@ -1,0 +1,2 @@
+# Keep the frozen byte identities intact on Windows and macOS checkouts.
+* -text
