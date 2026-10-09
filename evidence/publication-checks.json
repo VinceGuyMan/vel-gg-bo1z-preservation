@@ -47,7 +47,7 @@
     "anonymous_public_site_har_and_screenshots_retained": true
   },
   "multipart_restore_tool_validation": {
-    "isolated_checks_passed": 16,
+    "isolated_checks_passed": 17,
     "streaming_join_sha256_and_zip64_extraction_tested": true,
     "wrong_hash_existing_output_and_unsafe_zip_members_rejected": true
   }
