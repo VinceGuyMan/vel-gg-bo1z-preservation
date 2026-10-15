@@ -8,10 +8,15 @@ main( default_on )
 	{
 		SetDvar( "zinfo", default_on );
 	}
-	flag_wait( "all_players_connected" );
+
+	while ( !IsDefined( get_players() ) || get_players().size == 0 )
+	{
+		wait( 0.1 );
+	}
 
 	last_alive = -1;
 	last_left = -1;
+	last_round = -1;
 	last_on = -1;
 	last_send = 0;
 
@@ -31,7 +36,7 @@ main( default_on )
 			cur_round = level.round_number;
 		}
 
-		if ( on != last_on || ( on && ( alive != last_alive || left != last_left || GetTime() - last_send >= 3000 ) ) )
+		if ( on != last_on || ( on && ( alive != last_alive || left != last_left || cur_round != last_round || GetTime() - last_send >= 1000 ) ) )
 		{
 			players = get_players();
 			for ( i = 0; i < players.size; i++ )
@@ -46,8 +51,9 @@ main( default_on )
 			last_on = on;
 			last_alive = alive;
 			last_left = left;
+			last_round = cur_round;
 			last_send = GetTime();
 		}
-		wait( 0.25 );
+		wait( 0.2 );
 	}
 }

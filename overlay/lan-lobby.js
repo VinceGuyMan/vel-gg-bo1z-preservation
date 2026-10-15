@@ -6,7 +6,7 @@ const boundedInteger=(value,min,max,fallback)=>Number.isInteger(Number(value))&&
 export function lobbySettings(value={}){
  const mode=value.mode==='horde'?'horde':'classic';
  return {mode,maxPlayers:boundedInteger(value.maxPlayers,2,4,4),startRound:mode==='horde'?boundedInteger(value.startRound,1,255,1):1,
-  enemyCount:mode==='horde'?boundedInteger(value.enemyCount,24,1024,128):128,counter:mode==='horde'&&(value.counter===true||value.counter===1||value.counter==='1'),noPerks:mode==='horde'&&(value.noPerks===true||value.noPerks===1||value.noPerks==='1')};
+  enemyCount:mode==='horde'?boundedInteger(value.enemyCount,24,1024,128):128,counter:(value.counter===true||value.counter===1||value.counter==='1'),noPerks:mode==='horde'&&(value.noPerks===true||value.noPerks===1||value.noPerks==='1')};
 }
 export function lobbyURL({mapSlug,service,roomCode='',settings=DEFAULT_SETTINGS,title='',host=false},origin){
  if(!/^[a-z]+$/.test(mapSlug)||(!host&&!ROOM_CODE.test(roomCode)))throw Error('Invalid lobby selection');

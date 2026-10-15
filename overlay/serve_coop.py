@@ -116,8 +116,12 @@ def overlays(root):
         }
         setDvar('zinfo', '1');
         setDvar('kisak_mod_tabinfo', '1');
+        setDvar('developer', '1');
+        setDvar('developer_script', '1');
         setDvar('logfile', '1');
+        setDvar('g_log', 'games_mp.log');
         setDvar('g_logSync', '1');
+        setDvar('con_minicon', '0');
       }
     } catch {}
 """
@@ -153,16 +157,6 @@ def overlays(root):
       }
       return hudEl;
     }
-    function updateCounterDisplay(alive, left) {
-      const el = getCounterHud();
-      if (!el) return;
-      el.style.display = 'block';
-      let html = '<span style="color:#ff4444;font-weight:900;margin-right:6px;">ZOMBIES:</span>' + alive;
-      if (left !== undefined && left !== null && left !== alive) {
-        html += ' <span style="color:#aaaaaa;font-size:13px;font-weight:normal;">(' + left + ' left)</span>';
-      }
-      el.innerHTML = html;
-    }
     function updateCounterDisplay(alive, left, round) {
       try {
         const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
@@ -172,18 +166,16 @@ def overlays(root):
       if (!el) return;
       el.style.display = 'block';
       let html = '<span style="color:#ff4444;font-weight:900;margin-right:6px;">ZOMBIES:</span>' + alive;
-      if (left !== undefined && left !== null && left !== alive) {
-        html += ' <span style="color:#bbbbbb;font-size:13px;font-weight:normal;">(' + left + ' left)</span>';
+      const numAlive = parseInt(alive, 10);
+      const numLeft = left !== undefined && left !== null && left !== '' ? parseInt(left, 10) : numAlive;
+      if (!Number.isNaN(numLeft) && numLeft > numAlive) {
+        html += ' <span style="color:#bbbbbb;font-size:13px;font-weight:normal;">(' + numLeft + ' remaining)</span>';
       }
       if (round !== undefined && round !== null && round !== '') {
         html += ' &nbsp;|&nbsp; <span style="color:#ffd700;font-weight:bold;">ROUND ' + round + '</span>';
       }
       el.innerHTML = html;
     }
-    try {
-      const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
-      if (p.zombieCounter !== false) setTimeout(() => updateCounterDisplay(0, 0, 1), 3000);
-    } catch {}
     document.addEventListener('fullscreenchange', () => {
       if (hudEl) {
         const target = document.fullscreenElement || document.body;
@@ -192,12 +184,25 @@ def overlays(root):
     });
 """
     counter_log_injection = """
-    if (String(message).includes('zinfo:')) {
-      const m = /zinfo:\s+alive\s+(\d+)\s+left\s+(\d+)(?:\s+round\s+(\d+))?/.exec(String(message));
-      if (m && typeof updateCounterDisplay === 'function') updateCounterDisplay(m[1], m[2], m[3]);
+    const strMsg = String(message);
+    if (strMsg.includes('zinfo:') || strMsg.includes('zinfo alive')) {
+      const aliveMatch = /alive\s*(\d+)/i.exec(strMsg);
+      const leftMatch = /left\s*(\d+)/i.exec(strMsg);
+      const roundMatch = /round\s*(\d+)/i.exec(strMsg);
+      if (aliveMatch && typeof updateCounterDisplay === 'function') {
+        updateCounterDisplay(aliveMatch[1], leftMatch ? leftMatch[1] : undefined, roundMatch ? roundMatch[1] : undefined);
+      }
+    } else if (strMsg.includes('horde:') || strMsg.includes('killrate')) {
+      const aliveMatch = /alive\s*(\d+)/i.exec(strMsg);
+      const limitMatch = /limit\s*(\d+)/i.exec(strMsg);
+      const totalMatch = /total\s*(\d+)/i.exec(strMsg);
+      const roundMatch = /round\s*(\d+)/i.exec(strMsg);
+      if (aliveMatch && typeof updateCounterDisplay === 'function') {
+        const a = parseInt(aliveMatch[1], 10);
+        const l = totalMatch ? (a + parseInt(totalMatch[1], 10)) : limitMatch ? parseInt(limitMatch[1], 10) : undefined;
+        updateCounterDisplay(a, l, roundMatch ? roundMatch[1] : undefined);
+      }
     }
-    const hm = /alive\s+(\d+)\s+limit\s+(\d+)/.exec(String(message));
-    if (hm && typeof updateCounterDisplay === 'function') updateCounterDisplay(hm[1]);
 """
     original_engine_patched = profile_import + original_engine.replace('function log(message, error = false) {', counter_hud_script + '\n  function log(message, error = false) {' + counter_log_injection).replace('module.callMain(args);', prefs_injection + "args.splice(args.indexOf('+devmap'),0,'+set','name',getPlayerProfile().name); module.callMain(args);")
     engine = engine.replace('function log(message, error = false) {', counter_hud_script + '\n  function log(message, error = false) {' + counter_log_injection)
@@ -217,7 +222,8 @@ def overlays(root):
         raise ValueError('Captured Horde argument interface differs')
     engine = engine.replace(needle, """const roomOptions=globalThis.__coopConfig?.settings;
     if(!roomOptions)throw Error('Host settings are required before co-op engine start');
-    if(roomOptions.mode==='horde')args.splice(args.indexOf('+devmap'),0,...hordeArguments({n:roomOptions.enemyCount,round:roomOptions.startRound,mods:['horde',...(roomOptions.counter?['zinfo']:[]),...(roomOptions.noPerks?['noperks']:[])]}));""")
+    if(roomOptions.mode==='horde')args.splice(args.indexOf('+devmap'),0,...hordeArguments({n:roomOptions.enemyCount,round:roomOptions.startRound,mods:['horde',...(roomOptions.counter?['zinfo']:[]),...(roomOptions.noPerks?['noperks']:[])]}));
+    else if(roomOptions.counter)args.splice(args.indexOf('+devmap'),0,'+set','fs_mods','zinfo');""")
     engine = engine.replace("'kisak-page-query'", "'bo1z-lan-lobby-v2-page-query'")
     assert engine.count("'kisak-renderer'") == 3
     engine = engine.replace("'kisak-renderer'", "'bo1z-lan-lobby-v2-renderer'")
