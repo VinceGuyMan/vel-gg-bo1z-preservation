@@ -91,6 +91,20 @@
 <label class="check-row"><span>Fullscreen on play<small>Your browser asks when you start.</small></span><input id="fullscreen" type="checkbox" data-menu-control></label>
 <p class="small-note">Changes apply across the collection.</p>
 </fieldset>
+<fieldset class="settings-group"><legend>Graphics</legend>
+<label class="range-label" for="gfx-fov">Field of view <output id="gfx-fov-value" for="gfx-fov">65</output></label>
+<input id="gfx-fov" type="range" min="65" max="100" step="1" value="65" data-menu-control>
+<label class="host-field" style="border-top:1px solid var(--line);padding:14px 0 10px;"><span>Anti-aliasing</span><select id="gfx-aa" data-menu-control><option value="1">Off</option><option value="2">2x MSAA</option><option value="4">4x MSAA</option></select></label>
+<label class="host-field" style="padding:10px 0;"><span>Max frame rate</span><select id="gfx-maxfps" data-menu-control><option value="0">Uncapped</option><option value="60">60 FPS</option><option value="120">120 FPS</option><option value="144">144 FPS</option><option value="240">240 FPS</option></select></label>
+<label class="host-field" style="padding:10px 0;"><span>Anisotropic filtering</span><select id="gfx-aniso" data-menu-control><option value="1">Off</option><option value="2">2x</option><option value="4">4x</option><option value="8">8x</option><option value="16" selected>16x</option></select></label>
+<label class="host-field" style="padding:10px 0;"><span>Texture quality</span><select id="gfx-texture" data-menu-control><option value="0" selected>Extra</option><option value="1">High</option><option value="2">Normal</option><option value="3">Low</option></select></label>
+<label class="check-row"><span>Dynamic shadows<small>Real-time shadow maps for characters and sunlight.</small></span><input id="gfx-shadows" type="checkbox" checked data-menu-control></label>
+<label class="check-row"><span>Sync every frame (V-Sync)<small>Wait for monitor refresh to eliminate tearing.</small></span><input id="gfx-vsync" type="checkbox" data-menu-control></label>
+<label class="check-row"><span>Depth of field<small>Blur distant and weapon aim backgrounds.</small></span><input id="gfx-dof" type="checkbox" checked data-menu-control></label>
+<label class="check-row"><span>Draw FPS counter<small>Show real-time frames per second in-game.</small></span><input id="gfx-fps" type="checkbox" data-menu-control></label>
+<label class="check-row"><span>Zombie counter<small>Show zombies alive and remaining on screen.</small></span><input id="gfx-zombie-counter" type="checkbox" data-menu-control></label>
+<p class="small-note">Applied upon entering game.</p>
+</fieldset>
 <fieldset class="settings-group"><legend>Controller</legend>
 <div id="controller-fields"></div>
 <details id="controller-advanced" class="control-guide"><summary data-menu-control>Advanced aiming</summary><div id="controller-advanced-fields"></div></details>

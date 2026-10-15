@@ -67,7 +67,158 @@ def overlays(root):
     engine = engine.replace(needle, needle + '\n    globalThis.__coopModule=module; let coopVerified; try {coopVerified=coopRuntime.activate(module,()=>globalThis.__coopConfig);} catch {} if(!coopVerified){module.PThread?.terminateAllThreads();throw Error("Co-op package verification failed. Close this page and verify the package before retrying.");} globalThis.__coopBridge=coopVerified.bridge; globalThis.__coopNativeResumeAdmission=coopVerified.nativeResumeAdmission;')
     needle = 'module.callMain(args);'
     assert engine.count(needle) == 1
-    engine = engine.replace(needle, """const devmap=args.indexOf('+devmap');
+    prefs_injection = """
+    try {
+      const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
+      const setDvar = (name, val) => {
+        val = String(val);
+        let found = false;
+        for (let i = 0; i < args.length - 1; ++i) {
+          if (args[i] === name && i > 0 && args[i - 1] === '+set') {
+            args[i + 1] = val;
+            found = true;
+          }
+        }
+        if (!found) {
+          const d = args.indexOf('+devmap');
+          if (d >= 0) args.splice(d, 0, '+set', name, val);
+          else args.push('+set', name, val);
+        }
+      };
+      if (p.fov) setDvar('cg_fov', p.fov);
+      if (p.aa) setDvar('r_aaSamples', p.aa);
+      if (p.maxfps !== undefined) setDvar('com_maxfps', p.maxfps);
+      if (p.aniso) setDvar('r_texFilterAnisoMin', p.aniso);
+      if (p.texture !== undefined) setDvar('r_picmip', p.texture);
+      if (p.shadows !== undefined) setDvar('sm_enable', p.shadows ? '1' : '0');
+      if (p.vsync !== undefined) setDvar('r_vsync', p.vsync ? '1' : '0');
+      if (p.dof !== undefined) setDvar('r_dof_enable', p.dof ? '1' : '0');
+      if (p.drawFps !== undefined) {
+        setDvar('cg_drawFPS', p.drawFps ? '1' : '0');
+        setDvar('kisak_fpscounter', p.drawFps ? '1' : '0');
+      }
+      if (p.zombieCounter) {
+        let fsModsIdx = -1;
+        for (let i = 0; i < args.length - 1; ++i) {
+          if (args[i] === 'fs_mods' && i > 0 && args[i - 1] === '+set') {
+            fsModsIdx = i + 1;
+            break;
+          }
+        }
+        if (fsModsIdx >= 0) {
+          const cur = args[fsModsIdx].split(' ').filter(Boolean);
+          if (!cur.includes('zinfo')) {
+            cur.push('zinfo');
+            args[fsModsIdx] = cur.join(' ');
+          }
+        } else {
+          setDvar('fs_mods', 'zinfo');
+        }
+        setDvar('zinfo', '1');
+        setDvar('kisak_mod_tabinfo', '1');
+        setDvar('logfile', '1');
+        setDvar('g_logSync', '1');
+      }
+    } catch {}
+"""
+    counter_hud_script = """
+    let hudEl = null;
+    function getCounterHud() {
+      if (hudEl && hudEl.isConnected) return hudEl;
+      hudEl = document.getElementById('zombie-counter-overlay');
+      if (!hudEl) {
+        hudEl = document.createElement('div');
+        hudEl.id = 'zombie-counter-overlay';
+        Object.assign(hudEl.style, {
+          position: 'fixed',
+          top: '14px',
+          right: '18px',
+          zIndex: '2147483647',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          font: "bold 16px/1.3 'Segoe UI', system-ui, -apple-system, sans-serif",
+          color: '#ffffff',
+          textShadow: '0 0 8px rgba(0,0,0,0.9), 1px 1px 3px #000',
+          background: 'rgba(12, 12, 12, 0.78)',
+          border: '1.5px solid rgba(230, 40, 40, 0.55)',
+          borderRadius: '7px',
+          padding: '6px 14px',
+          letterSpacing: '0.05em',
+          boxShadow: '0 3px 10px rgba(0,0,0,0.6)',
+          display: 'none',
+          transition: 'opacity 0.2s ease'
+        });
+        const target = document.fullscreenElement || document.body;
+        target.appendChild(hudEl);
+      }
+      return hudEl;
+    }
+    function updateCounterDisplay(alive, left) {
+      const el = getCounterHud();
+      if (!el) return;
+      el.style.display = 'block';
+      let html = '<span style="color:#ff4444;font-weight:900;margin-right:6px;">ZOMBIES:</span>' + alive;
+      if (left !== undefined && left !== null && left !== alive) {
+        html += ' <span style="color:#aaaaaa;font-size:13px;font-weight:normal;">(' + left + ' left)</span>';
+      }
+      el.innerHTML = html;
+    }
+    let zinfoAlivePtr = 0, zinfoLeftPtr = 0, lastScan = 0;
+    function pollZinfoMemory() {
+      try {
+        const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
+        if (!p.zombieCounter) {
+          if (hudEl) hudEl.style.display = 'none';
+          return;
+        }
+        if (!module?.HEAP32) return;
+        const now = performance.now();
+        const h32 = module.HEAP32;
+        if (!zinfoAlivePtr && now - lastScan > 1500) {
+          lastScan = now;
+          for (let i = 0; i < Math.min(h32.length, 3000000); ++i) {
+            if (h32[i] === 356925) {
+              zinfoAlivePtr = (i << 2);
+              break;
+            }
+          }
+        }
+        if (!zinfoLeftPtr && zinfoAlivePtr) {
+          for (let i = 0; i < Math.min(h32.length, 3000000); ++i) {
+            if (h32[i] === 77554) {
+              zinfoLeftPtr = (i << 2);
+              break;
+            }
+          }
+        }
+        if (zinfoAlivePtr) {
+          const alive = h32[(zinfoAlivePtr >> 2) + 4];
+          const left = zinfoLeftPtr ? h32[(zinfoLeftPtr >> 2) + 4] : alive;
+          if (alive >= 0 && alive < 2000) {
+            updateCounterDisplay(alive, left);
+          }
+        }
+      } catch {}
+    }
+    setInterval(pollZinfoMemory, 250);
+    document.addEventListener('fullscreenchange', () => {
+      if (hudEl) {
+        const target = document.fullscreenElement || document.body;
+        if (hudEl.parentElement !== target) target.appendChild(hudEl);
+      }
+    });
+"""
+    counter_log_injection = """
+    if (String(message).includes('zinfo:')) {
+      const m = /zinfo:\s+alive\s+(\d+)\s+left\s+(\d+)/.exec(String(message));
+      if (m && typeof updateCounterDisplay === 'function') updateCounterDisplay(m[1], m[2]);
+    }
+    const hm = /alive\s+(\d+)\s+limit\s+(\d+)/.exec(String(message));
+    if (hm && typeof updateCounterDisplay === 'function') updateCounterDisplay(hm[1]);
+"""
+    original_engine_patched = profile_import + original_engine.replace('function log(message, error = false) {', counter_hud_script + '\n  function log(message, error = false) {' + counter_log_injection).replace('module.callMain(args);', prefs_injection + "args.splice(args.indexOf('+devmap'),0,'+set','name',getPlayerProfile().name); module.callMain(args);")
+    engine = engine.replace('function log(message, error = false) {', counter_hud_script + '\n  function log(message, error = false) {' + counter_log_injection)
+    engine = engine.replace(needle, prefs_injection + """const devmap=args.indexOf('+devmap');
     if(devmap<0)throw Error('Experimental co-op requires a configured Zombies map');
     args.splice(devmap,0,'+set','name',getPlayerProfile().name);
     args.splice(devmap,0,'+set','sv_maxclients',String(globalThis.__coopConfig?.settings?.maxPlayers??4));
@@ -87,14 +238,29 @@ def overlays(root):
     engine = engine.replace("'kisak-page-query'", "'bo1z-lan-lobby-v2-page-query'")
     assert engine.count("'kisak-renderer'") == 3
     engine = engine.replace("'kisak-renderer'", "'bo1z-lan-lobby-v2-renderer'")
-    maps = (root / 'site/bo1z/maps.js').read_text(encoding='utf-8')
+    raw_maps = (root / 'site/bo1z/maps.js').read_text(encoding='utf-8')
     needle = "opfs: m.zone === FIRST ? 'pack' : 'pack-' + m.slug"
-    assert maps.count(needle) == 1
-    maps = maps.replace(needle, "opfs: 'bo1z-lan-lobby-v2-pack-' + m.slug")
-    maps = maps.replace("settings: m.slug + '-settings'", "settings: 'bo1z-lan-lobby-v2-' + m.slug + '-settings'")
+    assert raw_maps.count(needle) == 1
+    manifest_needle = "export const manifestUrl = horde ? packBase + 'web-manifest-horde.json' : map.root + 'manifest.json';"
+    assert raw_maps.count(manifest_needle) == 1
+    manifest_patch = """let wantsMods = horde;
+try {
+  const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
+  if (p.zombieCounter) wantsMods = true;
+} catch {}
+try {
+  const s = JSON.parse(localStorage.getItem(map.settings) || '{}');
+  if (s.zombieCounter || (Array.isArray(s.mods) && s.mods.includes('zinfo'))) wantsMods = true;
+} catch {}
+export const manifestUrl = (wantsMods || horde) ? packBase + 'web-manifest-horde.json' : map.root + 'manifest.json';"""
+    solo_maps = raw_maps.replace(manifest_needle, manifest_patch)
+    coop_maps = solo_maps.replace(needle, "opfs: 'bo1z-lan-lobby-v2-pack-' + m.slug")
+    coop_maps = coop_maps.replace("settings: m.slug + '-settings'", "settings: 'bo1z-lan-lobby-v2-' + m.slug + '-settings'")
     # Preserve workers' BroadcastChannel pairing after changing the page identity.
-    glue = (root / 'site/bo1z/artifacts/KisakBlack-web.mjs').read_text(encoding='utf-8')
-    glue = glue.replace('kisak-page-query', 'bo1z-lan-lobby-v2-page-query')
+    raw_glue = (root / 'site/bo1z/artifacts/KisakBlack-web.mjs').read_text(encoding='utf-8')
+    solo_glue = raw_glue.replace('requiredLimits:{maxVertexBuffers:adapter.limits.maxVertexBuffers,maxVertexAttributes:adapter.limits.maxVertexAttributes}',
+                                 'requiredLimits:{maxVertexBuffers:adapter.limits.maxVertexBuffers,maxVertexAttributes:adapter.limits.maxVertexAttributes,maxTextureDimension3D:adapter.limits.maxTextureDimension3D}')
+    glue = raw_glue.replace('kisak-page-query', 'bo1z-lan-lobby-v2-page-query')
     # Observe bytes at the original successful instantiation sites. Keep original
     # Emscripten Asyncify/TLS/worker/runtime startup and fallback paths intact.
     needle = 'var instance=await WebAssembly.instantiate(binary,imports);return instance'
@@ -103,12 +269,39 @@ def overlays(root):
     needle = 'var response=fetch(binaryFile,{credentials:"same-origin"});var instantiationResult=await WebAssembly.instantiateStreaming(response,imports);return instantiationResult'
     assert glue.count(needle) == 1
     glue = glue.replace(needle, 'var response=fetch(binaryFile,{credentials:"same-origin"});var observedBytes=Module["__coopObserveWasmBytes"]?response.then(r=>r.clone().arrayBuffer()).catch(()=>null):null;var instantiationResult=await WebAssembly.instantiateStreaming(response,imports);try{if(observedBytes)await Module["__coopObserveWasmBytes"](await observedBytes,instantiationResult["module"],Module)}catch{}return instantiationResult')
-    # Separate URLs preserve every Solo dependency's original bytes. Keep the
-    # artifact directory stable for native worker-relative asset references.
     glue = glue.replace('KisakBlack-web.mjs', 'KisakBlack-web-coop.mjs').replace('KisakBlack-web.wasm', 'KisakBlack-web-coop.wasm')
-    play = (root / 'site/bo1z/play.js').read_text(encoding='utf-8')
-    play = play.replace("from './maps.js'", "from './coop-maps.js'").replace("from './engine.js'", "from './coop-engine.js'")
-    play = play.replace("BASE + 'engine-download-worker.js'", "BASE + 'coop-engine-download-worker.js'")
+    glue = glue.replace('requiredLimits:{maxVertexBuffers:adapter.limits.maxVertexBuffers,maxVertexAttributes:adapter.limits.maxVertexAttributes}',
+                        'requiredLimits:{maxVertexBuffers:adapter.limits.maxVertexBuffers,maxVertexAttributes:adapter.limits.maxVertexAttributes,maxTextureDimension3D:adapter.limits.maxTextureDimension3D}')
+    raw_play = (root / 'site/bo1z/play.js').read_text(encoding='utf-8')
+    mods_load_needle = "if (Array.isArray(saved?.mods)) savedMods = saved.mods.filter(name => Object.hasOwn(MODS, name));"
+    assert raw_play.count(mods_load_needle) == 1
+    mods_load_patch = mods_load_needle + """
+  try {
+    const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
+    if (p.zombieCounter || saved?.zombieCounter) {
+      if (!savedMods.includes('zinfo')) savedMods.push('zinfo');
+    }
+  } catch {}"""
+    settings_needle = "function settings() {\n  return { sensitivity: Number($('sensitivity').value), volume: Number($('volume').value), fullscreen: $('fullscreen').checked,\n    mods: modBoxes ? modBoxes.filter(box => box.checked).map(box => box.dataset.mod) : savedMods, horde: hordeSettings() };\n}"
+    assert raw_play.count(settings_needle) == 1
+    settings_patch = """function settings() {
+  let activeMods = modBoxes ? modBoxes.filter(box => box.checked).map(box => box.dataset.mod) : savedMods;
+  try {
+    const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
+    if (p.zombieCounter && !activeMods.includes('zinfo')) activeMods = [...activeMods, 'zinfo'];
+  } catch {}
+  return { sensitivity: Number($('sensitivity').value), volume: Number($('volume').value), fullscreen: $('fullscreen').checked,
+    mods: activeMods, horde: hordeSettings() };
+}"""
+    save_needle = "try { localStorage.setItem(map.settings, JSON.stringify({ ...settings(), volumeChosen })); } catch { /* Optional preference cache. */ }"
+    save_patch = """try {
+    let prior = {};
+    try { prior = JSON.parse(localStorage.getItem(map.settings) || '{}'); } catch {}
+    localStorage.setItem(map.settings, JSON.stringify({ ...prior, ...settings(), volumeChosen }));
+  } catch { /* Optional preference cache. */ }"""
+    solo_play = raw_play.replace(mods_load_needle, mods_load_patch).replace(settings_needle, settings_patch).replace(save_needle, save_patch).replace("const MODS = { horde: 'Hell mode: more zombies at once', zinfo: 'Tab: zombie counter' };", "const MODS = { horde: 'Hell mode: more zombies at once', zinfo: 'On-screen Zombie & Wave Counter' };")
+    coop_play = solo_play.replace("from './maps.js'", "from './coop-maps.js'").replace("from './engine.js'", "from './coop-engine.js'")
+    coop_play = coop_play.replace("BASE + 'engine-download-worker.js'", "BASE + 'coop-engine-download-worker.js'")
     engine_worker = (root / 'site/bo1z/engine-download-worker.js').read_text(encoding='utf-8').replace("import('./download-worker.js')", "import('./coop-download-worker.js')")
     download_worker = (root / 'site/bo1z/download-worker.js').read_text(encoding='utf-8').replace("from './maps.js'", "from './coop-maps.js'")
     # Preserve the original browser capture body and normal native key/mouse
@@ -120,14 +313,17 @@ def overlays(root):
     input_source = "import { captureWithController } from './coop/gamepad-input.js';\n" + input_source.replace(input_decl, 'function captureOriginalInput(canvas, send, hooks = {}) {')
     input_source += '\nexport function captureInput(canvas, send, hooks = {}) { return captureWithController(captureOriginalInput, canvas, send, hooks); }\n'
     result = {
-        '/bo1z/engine.js': ('text/javascript', (profile_import + original_engine.replace('module.callMain(args);', "args.splice(args.indexOf('+devmap'),0,'+set','name',getPlayerProfile().name); module.callMain(args);")).encode()),
+        '/bo1z/maps.js': ('text/javascript', solo_maps.encode()),
+        '/bo1z/play.js': ('text/javascript', solo_play.encode()),
+        '/bo1z/engine.js': ('text/javascript', original_engine_patched.encode()),
         '/bo1z/input.js': ('text/javascript', input_source.encode()),
         '/bo1z/coop/gamepad-input.js': ('text/javascript', (HERE / 'gamepad-input.js').read_bytes()),
         '/bo1z/coop-engine.js': ('text/javascript', engine.encode()),
-        '/bo1z/coop-maps.js': ('text/javascript', maps.encode()),
-        '/bo1z/coop-play.js': ('text/javascript', play.encode()),
+        '/bo1z/coop-maps.js': ('text/javascript', coop_maps.encode()),
+        '/bo1z/coop-play.js': ('text/javascript', coop_play.encode()),
         '/bo1z/coop-engine-download-worker.js': ('text/javascript', engine_worker.encode()),
         '/bo1z/coop-download-worker.js': ('text/javascript', download_worker.encode()),
+        '/bo1z/artifacts/KisakBlack-web.mjs': ('text/javascript', solo_glue.encode()),
         '/bo1z/artifacts/KisakBlack-web-coop.mjs': ('text/javascript', glue.encode()),
         '/bo1z/artifacts/KisakBlack-web-coop.wasm': ('application/wasm', (HERE / 'KisakBlack-web.wasm').read_bytes()),
     }
@@ -137,6 +333,66 @@ def overlays(root):
     result['/bo1z-coop/'] = result['/bo1z-coop/main-menu.html']
     for name in ('player-profile.js', 'host-settings.js', 'ws-loader.js', 'ws-transport.js', 'peer-schema.js', 'bridge.js', 'observer.js', 'rtc-transport.js', 'resume-controller.js', 'native-admission.js', 'runtime-attestation.js', 'status.js', 'status-ui.js', 'start-gate.js', 'request-policy.js', 'lobby.js', 'lobby.css'):
         result['/bo1z/coop/' + name] = ('text/css' if name.endswith('.css') else 'text/javascript', (HERE / name).read_bytes())
+    zinfo_bytes = (HERE / 'zinfo_overlay.gsc').read_bytes()
+    zinfo_sha256 = hashlib.sha256(zinfo_bytes).hexdigest()
+    zinfo_size = len(zinfo_bytes)
+    mod_support_files = [
+        'mods/_stack/maps/_modstack.gsc',
+        'mods/_stack/maps/_zombiemode_ffotd.gsc',
+        'mods/_stack/maps/zombie_pentagon_ffotd.gsc',
+        'mods/zinfo/maps/_zombiemode_ffotd.gsc',
+        'mods/zinfo/maps/zinfo/_hooks.gsc',
+    ]
+    mod_support_data = {
+        rel: (root / 'site/bo1z/pack' / rel).read_bytes()
+        for rel in mod_support_files
+    }
+    mod_files = {
+        'mods/zinfo/maps/zinfo/_zinfo.gsc': ('text/plain; charset=utf-8', zinfo_bytes),
+        **{rel: ('text/plain; charset=utf-8', data) for rel, data in mod_support_data.items()}
+    }
+    for slug in MAPS:
+        prefix = '/bo1z/pack/' if slug == 'five' else f'/bo1z/{slug}/pack/'
+        for rel_path, (mtype, data) in mod_files.items():
+            result[prefix + rel_path] = (mtype, data)
+        if slug == 'five':
+            for rel_path, (mtype, data) in mod_files.items():
+                result['/bo1z/five/pack/' + rel_path] = (mtype, data)
+    for slug in MAPS:
+        prefix = '/bo1z/pack/' if slug == 'five' else f'/bo1z/{slug}/pack/'
+        src_horde = root / ('site/bo1z/pack/web-manifest-horde.json' if slug == 'five' else f'site/bo1z/{slug}/pack/web-manifest-horde.json')
+        if src_horde.is_file():
+            manifest = json.loads(src_horde.read_text(encoding='utf-8'))
+            for f in manifest.get('files', []):
+                if f.get('path') == 'mods/zinfo/maps/zinfo/_zinfo.gsc':
+                    old_size = f.get('size', 2142)
+                    f['sha256'] = zinfo_sha256
+                    f['size'] = zinfo_size
+                    delta = zinfo_size - old_size
+                    manifest['total_bytes'] = manifest.get('total_bytes', 0) + delta
+                    if 'class_bytes' in manifest and 'boot' in manifest['class_bytes']:
+                        manifest['class_bytes']['boot'] += delta
+            manifest_bytes = json.dumps(manifest, separators=(',', ':')).encode('utf-8')
+            result[prefix + 'web-manifest-horde.json'] = ('application/json', manifest_bytes)
+            if slug == 'five':
+                result['/bo1z/five/pack/web-manifest-horde.json'] = ('application/json', manifest_bytes)
+        else:
+            src_classic = root / f'site/bo1z/{slug}/manifest.json'
+            manifest = json.loads(src_classic.read_text(encoding='utf-8'))
+            extra_files = [
+                {'path': rel, 'size': len(data), 'sha256': hashlib.sha256(data).hexdigest(), 'kind': 'mod', 'priority': 'boot', 'class': 'boot'}
+                for rel, data in mod_support_data.items()
+            ] + [
+                {'path': 'mods/zinfo/maps/zinfo/_zinfo.gsc', 'size': zinfo_size, 'sha256': zinfo_sha256, 'kind': 'mod', 'priority': 'boot', 'class': 'boot'}
+            ]
+            manifest['files'] = manifest.get('files', []) + extra_files
+            added_bytes = sum(f['size'] for f in extra_files)
+            manifest['total_bytes'] = manifest.get('total_bytes', 0) + added_bytes
+            if 'class_bytes' in manifest and 'boot' in manifest['class_bytes']:
+                manifest['class_bytes']['boot'] += added_bytes
+            manifest['version'] = hashlib.sha256(json.dumps(manifest['files']).encode('utf-8')).hexdigest()
+            manifest_bytes = json.dumps(manifest, separators=(',', ':')).encode('utf-8')
+            result[prefix + 'web-manifest-horde.json'] = ('application/json', manifest_bytes)
     full = json.loads((HERE / 'build-metadata.json').read_text(encoding='utf-8'))
     peer = {key: full[key] for key in full['peerGuardFields']}
     actual = hashlib.sha256(result['/bo1z/artifacts/KisakBlack-web-coop.wasm'][1]).hexdigest()
@@ -178,7 +434,7 @@ def handler(root, launch_id=None, discovery_url=None):
                 return
             if path == '/bo1z/coop/':
                 self.send_response(302)
-                self.send_header('Location', '/bo1z/five?coop=1&renderer=webgl2')
+                self.send_header('Location', '/bo1z/five?coop=1')
                 self.end_headers()
                 return
             data = resources.get(path)

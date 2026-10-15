@@ -23,8 +23,26 @@ export function signalingOrigin(value){
  return url.origin;
 }
 export function mergeGamePreference(saved,key,value){
- if(!['sensitivity','volume','fullscreen'].includes(key))throw Error('Invalid preference');
- if(key==='fullscreen'?typeof value!=='boolean':!Number.isFinite(value)||value<(key==='volume'?0:0.5)||value>(key==='volume'?1:15))throw Error('Invalid preference value');
+ if(!['sensitivity','volume','fullscreen','fov','aa','maxfps','aniso','texture','shadows','vsync','dof','drawFps','zombieCounter'].includes(key))throw Error('Invalid preference');
+ if(key==='fullscreen'||key==='shadows'||key==='vsync'||key==='dof'||key==='drawFps'||key==='zombieCounter'){
+  if(typeof value!=='boolean')throw Error('Invalid preference value');
+ }else if(!Number.isFinite(value)){
+  throw Error('Invalid preference value');
+ }else if(key==='volume'&&(value<0||value>1)){
+  throw Error('Invalid preference value');
+ }else if(key==='sensitivity'&&(value<0.5||value>15)){
+  throw Error('Invalid preference value');
+ }else if(key==='fov'&&(value<65||value>100)){
+  throw Error('Invalid preference value');
+ }else if(key==='aa'&&![1,2,4].includes(value)){
+  throw Error('Invalid preference value');
+ }else if(key==='maxfps'&&![0,60,120,144,240].includes(value)){
+  throw Error('Invalid preference value');
+ }else if(key==='aniso'&&![1,2,4,8,16].includes(value)){
+  throw Error('Invalid preference value');
+ }else if(key==='texture'&&![0,1,2,3].includes(value)){
+  throw Error('Invalid preference value');
+ }
  return {...(saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{}),[key]:value,...(key==='volume'?{volumeChosen:true}:{})};
 }
 export function gameSettingsKeys(slug){
@@ -84,18 +102,55 @@ document.addEventListener('keydown',e=>{if(e.altKey||e.ctrlKey||e.metaKey)return
  else if(['ArrowLeft','ArrowRight'].includes(e.key)&&!['range','checkbox'].includes(e.target?.type)){e.preventDefault();menuAction(e.key==='ArrowLeft'?'left':'right');}
 });
 
-let gamePrefs={sensitivity:5,volume:.5,fullscreen:false};
+let gamePrefs={sensitivity:5,volume:.5,fullscreen:false,fov:65,aa:1,maxfps:0,aniso:16,texture:0,shadows:true,vsync:false,dof:true,drawFps:false,zombieCounter:true};
 try{const saved=JSON.parse(localStorage.getItem(prefsKey)??localStorage.getItem(MENU_BUILD+'-five-settings')??localStorage.getItem('five-settings'));if(saved){
  if(Number.isFinite(saved.sensitivity)&&saved.sensitivity>=.5&&saved.sensitivity<=15)gamePrefs.sensitivity=saved.sensitivity;
  if(Number.isFinite(saved.volume)&&saved.volume>=0&&saved.volume<=1)gamePrefs.volume=saved.volume;
  gamePrefs.fullscreen=saved.fullscreen===true;
+ if(Number.isFinite(saved.fov)&&saved.fov>=65&&saved.fov<=100)gamePrefs.fov=saved.fov;
+ if([1,2,4].includes(saved.aa))gamePrefs.aa=saved.aa;
+ if([0,60,120,144,240].includes(saved.maxfps))gamePrefs.maxfps=saved.maxfps;
+ if([1,2,4,8,16].includes(saved.aniso))gamePrefs.aniso=saved.aniso;
+ if([0,1,2,3].includes(saved.texture))gamePrefs.texture=saved.texture;
+ if(typeof saved.shadows==='boolean')gamePrefs.shadows=saved.shadows;
+ if(typeof saved.vsync==='boolean')gamePrefs.vsync=saved.vsync;
+ if(typeof saved.dof==='boolean')gamePrefs.dof=saved.dof;
+ if(typeof saved.drawFps==='boolean')gamePrefs.drawFps=saved.drawFps;
+ if(typeof saved.zombieCounter==='boolean')gamePrefs.zombieCounter=saved.zombieCounter;
 }}catch{}
-function showGamePreferences(){el('mouse-sensitivity').value=String(gamePrefs.sensitivity);el('master-volume').value=String(gamePrefs.volume);el('fullscreen').checked=gamePrefs.fullscreen;
+try{if(!localStorage.getItem(prefsKey)){localStorage.setItem(prefsKey,JSON.stringify(gamePrefs));}}catch{}
+try{if(gamePrefs.zombieCounter){for(const slug of Object.keys(MAP_DETAILS))for(const settingsKey of gameSettingsKeys(slug)){
+ let prior={};try{prior=JSON.parse(localStorage.getItem(settingsKey))??{};}catch{}
+ if(!Array.isArray(prior.mods)||!prior.mods.includes('zinfo')){
+  let priorMods=Array.isArray(prior.mods)?prior.mods.filter(m=>m!=='zinfo'):[];
+  priorMods.push('zinfo');
+  prior.mods=priorMods;
+  prior.zombieCounter=true;
+  localStorage.setItem(settingsKey,JSON.stringify(prior));
+ }
+}}}catch{}
+function showGamePreferences(){
+ el('mouse-sensitivity').value=String(gamePrefs.sensitivity);el('master-volume').value=String(gamePrefs.volume);el('fullscreen').checked=gamePrefs.fullscreen;
  el('mouse-sensitivity-value').value=gamePrefs.sensitivity.toFixed(1);el('master-volume-value').value=Math.round(gamePrefs.volume*100)+'%';
+ if(el('gfx-fov')){el('gfx-fov').value=String(gamePrefs.fov);el('gfx-fov-value').value=String(gamePrefs.fov);}
+ if(el('gfx-aa'))el('gfx-aa').value=String(gamePrefs.aa);
+ if(el('gfx-maxfps'))el('gfx-maxfps').value=String(gamePrefs.maxfps);
+ if(el('gfx-aniso'))el('gfx-aniso').value=String(gamePrefs.aniso);
+ if(el('gfx-texture'))el('gfx-texture').value=String(gamePrefs.texture);
+ if(el('gfx-shadows'))el('gfx-shadows').checked=gamePrefs.shadows;
+ if(el('gfx-vsync'))el('gfx-vsync').checked=gamePrefs.vsync;
+ if(el('gfx-dof'))el('gfx-dof').checked=gamePrefs.dof;
+ if(el('gfx-fps'))el('gfx-fps').checked=gamePrefs.drawFps;
+ if(el('gfx-zombie-counter'))el('gfx-zombie-counter').checked=gamePrefs.zombieCounter;
 }
 function saveGamePreference(key,value){gamePrefs=mergeGamePreference(gamePrefs,key,value);showGamePreferences();let saved=true;
  try{localStorage.setItem(prefsKey,JSON.stringify(gamePrefs));for(const slug of Object.keys(MAP_DETAILS))for(const settingsKey of gameSettingsKeys(slug)){
   let prior={};try{prior=JSON.parse(localStorage.getItem(settingsKey))??{};}catch{}
+  if(key==='zombieCounter'){
+   let priorMods=Array.isArray(prior.mods)?prior.mods.filter(m=>m!=='zinfo'):[];
+   if(value)priorMods.push('zinfo');
+   prior.mods=priorMods;
+  }
   localStorage.setItem(settingsKey,JSON.stringify(mergeGamePreference(prior,key,value)));
  }}catch{saved=false;}
  el('settings-status').textContent=saved?'Saved on this browser.':'Browser storage is unavailable. Map options remain available in game.';
@@ -104,6 +159,16 @@ showGamePreferences();
 el('mouse-sensitivity').addEventListener('input',e=>saveGamePreference('sensitivity',Number(e.target.value)));
 el('master-volume').addEventListener('input',e=>saveGamePreference('volume',Number(e.target.value)));
 el('fullscreen').addEventListener('input',e=>saveGamePreference('fullscreen',e.target.checked));
+el('gfx-fov')?.addEventListener('input',e=>saveGamePreference('fov',Number(e.target.value)));
+el('gfx-aa')?.addEventListener('change',e=>saveGamePreference('aa',Number(e.target.value)));
+el('gfx-maxfps')?.addEventListener('change',e=>saveGamePreference('maxfps',Number(e.target.value)));
+el('gfx-aniso')?.addEventListener('change',e=>saveGamePreference('aniso',Number(e.target.value)));
+el('gfx-texture')?.addEventListener('change',e=>saveGamePreference('texture',Number(e.target.value)));
+el('gfx-shadows')?.addEventListener('input',e=>saveGamePreference('shadows',e.target.checked));
+el('gfx-vsync')?.addEventListener('input',e=>saveGamePreference('vsync',e.target.checked));
+el('gfx-dof')?.addEventListener('input',e=>saveGamePreference('dof',e.target.checked));
+el('gfx-fps')?.addEventListener('input',e=>saveGamePreference('drawFps',e.target.checked));
+el('gfx-zombie-counter')?.addEventListener('input',e=>saveGamePreference('zombieCounter',e.target.checked));
 for(const field of CONTROLLER_FIELDS){const input=document.createElement('input'),label=document.createElement('label');input.id='controller-'+field.key;input.type=field.type;input.setAttribute('data-menu-control','');input.setAttribute('aria-label',field.label);label.htmlFor=input.id;const parent=el(['verticalScale','responseCurve','adsScale','smoothing'].includes(field.key)?'controller-advanced-fields':'controller-fields');
  if(field.type==='checkbox'){label.className='check-row';label.append(document.createTextNode(field.label),input);parent.append(label);}
  else{label.className='range-label';label.textContent=field.label;const output=document.createElement('output');output.id=input.id+'-value';output.htmlFor=input.id;label.append(output);Object.assign(input,{min:String(field.min),max:String(field.max),step:String(field.step)});parent.append(label,input);}
@@ -122,7 +187,7 @@ el('reset-controller').addEventListener('click',()=>{setControllerSettings(DEFAU
 function showControllerStatus(s=controllerStatus()){
  el('controller-status').textContent=s?.reason==='disabled'?'Controller is disabled.':s?.reason==='focus_required'?'Return to this tab to use the controller.':s?.reason==='release_controls'?'Release sticks and buttons to continue.':s?.connected?(s?.supported===false?'This controller uses an unsupported layout.':'Controller connected. D-pad to navigate, A to select, B to go back.'):'Connect a standard controller to navigate.';
 }
-el('reset-settings').addEventListener('click',()=>{for(const [k,v]of Object.entries({sensitivity:5,volume:.5,fullscreen:false}))saveGamePreference(k,v);
+el('reset-settings').addEventListener('click',()=>{for(const [k,v]of Object.entries({sensitivity:5,volume:.5,fullscreen:false,fov:65,aa:1,maxfps:0,aniso:16,texture:0,shadows:true,vsync:false,dof:true,drawFps:false,zombieCounter:true}))saveGamePreference(k,v);
  setControllerSettings(DEFAULT_CONTROLLER_SETTINGS);showControllerPreferences();});
 showControllerPreferences();showControllerStatus();const unsubscribeController=subscribeController(s=>{showControllerStatus(s);showControllerPreferences();}),controllerLease=startControllerPolling();
 window.addEventListener('pagehide',()=>{controllerLease?.dispose();unsubscribeController?.();lanLobby.dispose();delete globalThis.__bo1zControllerMenu;},{once:true});

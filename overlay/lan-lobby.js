@@ -11,7 +11,7 @@ export function lobbySettings(value={}){
 export function lobbyURL({mapSlug,service,roomCode='',settings=DEFAULT_SETTINGS,title='',host=false},origin){
  if(!/^[a-z]+$/.test(mapSlug)||(!host&&!ROOM_CODE.test(roomCode)))throw Error('Invalid lobby selection');
  const url=new URL('/bo1z/'+mapSlug,origin),options=lobbySettings(settings);
- url.searchParams.set('coop','1');url.searchParams.set('renderer','webgl2');url.searchParams.set('signaling',service);
+ url.searchParams.set('coop','1');url.searchParams.set('signaling',service);
  for(const[key,value]of Object.entries(options))url.searchParams.set(key,typeof value==='boolean'?(value?'1':'0'):String(value));
  if(host){url.searchParams.set('autohost','1');if(title.trim())url.searchParams.set('name',title.trim().slice(0,32));}
  else{url.searchParams.set('room',roomCode);url.searchParams.set('autojoin','1');}

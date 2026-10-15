@@ -121,15 +121,10 @@ def reserve_port(bind, port):
 
 
 def reserve_launch_port(bind, requested, preferred):
-    """Keep an exclusive reservation; automatic defaults may use a free OS port."""
+    """Keep an exclusive reservation; defaults insist on preferred port to avoid browser storage loss."""
     if requested is not None:
         return reserve_port(bind, requested)
-    try:
-        return reserve_port(bind, preferred)
-    except RuntimeError as error:
-        if not isinstance(error.__cause__, OSError):
-            raise
-    return reserve_port(bind, 0)
+    return reserve_port(bind, preferred)
 
 
 def health(url, timeout=0.8, opener=HTTP):
@@ -196,6 +191,52 @@ def local_lan_addresses():
     return sorted(addresses)
 
 
+WINDOWS_JOB = None
+
+
+def init_windows_job():
+    global WINDOWS_JOB
+    if os.name != 'nt' or WINDOWS_JOB is not None:
+        return
+    try:
+        import ctypes, ctypes.wintypes
+        kernel32 = ctypes.windll.kernel32
+        job = kernel32.CreateJobObjectW(None, None)
+        if job:
+            class JOBOBJECT_BASIC_LIMIT_INFORMATION(ctypes.Structure):
+                _fields_ = [
+                    ('PerProcessUserTimeLimit', ctypes.c_int64),
+                    ('PerJobUserTimeLimit', ctypes.c_int64),
+                    ('LimitFlags', ctypes.wintypes.DWORD),
+                    ('MinimumWorkingSetSize', ctypes.c_size_t),
+                    ('MaximumWorkingSetSize', ctypes.c_size_t),
+                    ('ActiveProcessLimit', ctypes.wintypes.DWORD),
+                    ('Affinity', ctypes.c_size_t),
+                    ('PriorityClass', ctypes.wintypes.DWORD),
+                    ('SchedulingClass', ctypes.wintypes.DWORD),
+                ]
+            class IO_COUNTERS(ctypes.Structure):
+                _fields_ = [('ReadOperationCount', ctypes.c_uint64), ('WriteOperationCount', ctypes.c_uint64),
+                            ('OtherOperationCount', ctypes.c_uint64), ('ReadTransferCount', ctypes.c_uint64),
+                            ('WriteTransferCount', ctypes.c_uint64), ('OtherTransferCount', ctypes.c_uint64)]
+            class JOBOBJECT_EXTENDED_LIMIT_INFORMATION(ctypes.Structure):
+                _fields_ = [
+                    ('BasicLimitInformation', JOBOBJECT_BASIC_LIMIT_INFORMATION),
+                    ('IoInfo', IO_COUNTERS),
+                    ('ProcessMemoryLimit', ctypes.c_size_t),
+                    ('JobMemoryLimit', ctypes.c_size_t),
+                    ('PeakProcessMemoryLimit', ctypes.c_size_t),
+                    ('PeakJobMemoryLimit', ctypes.c_size_t),
+                ]
+            info = JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+            info.BasicLimitInformation.LimitFlags = 0x2000  # JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+            if kernel32.SetInformationJobObject(job, 9, ctypes.byref(info), ctypes.sizeof(info)):
+                WINDOWS_JOB = job
+                kernel32.AssignProcessToJobObject(job, kernel32.GetCurrentProcess())
+    except Exception:
+        pass
+
+
 def open_browser(url):
     if sys.platform == 'darwin':
         for base in (Path('/Applications'), Path.home() / 'Applications'):
@@ -218,13 +259,17 @@ def open_browser(url):
         for base in (os.environ.get('PROGRAMFILES'), os.environ.get('PROGRAMFILES(X86)'), os.environ.get('LOCALAPPDATA')):
             if not base:
                 continue
-            for relative in ('Microsoft/Edge/Application/msedge.exe', 'Google/Chrome/Application/chrome.exe'):
+            for relative in (
+                'BraveSoftware/Brave-Browser/Application/brave.exe',
+                'Google/Chrome/Application/chrome.exe',
+                'Microsoft/Edge/Application/msedge.exe'
+            ):
                 exe = Path(base) / relative
                 if exe.is_file():
                     subprocess.Popen([str(exe), url])
                     return
     if not webbrowser.open(url):
-        print('Open the game URL above in Chrome or Edge.', flush=True)
+        print('Open the game URL above in Chrome, Brave or Edge.', flush=True)
 
 
 def stop_child(process):
@@ -322,6 +367,7 @@ def main(argv=None):
     if any(port is not None and not 1 <= port <= 65535 for port in (args.port, args.signal_port)) or (not args.signaling_url and args.port is not None and args.port == args.signal_port):
         parser.error('ports must be distinct integers between 1 and 65535')
     processes, reserved = [], []
+    init_windows_job()
     previous_break_handler = None
     previous_exit_handlers = {}
     snapshot = None
@@ -360,6 +406,17 @@ def main(argv=None):
         if remote:
             admit_external_signaling(remote)
         signal_bind = '0.0.0.0' if args.lan else '127.0.0.1'
+        target_game_port = args.port or 8767
+        if args.port is None and not remote and not args.free_internet_host:
+            try:
+                running_check = health(f'http://127.0.0.1:{target_game_port}/coop/health', timeout=0.5)
+                if running_check.get('ok') is True and running_check.get('service') == 'bo1z-coop-assets':
+                    print(f'Game is already running on http://127.0.0.1:{target_game_port}/. Opening in browser…', flush=True)
+                    if not args.no_open:
+                        open_browser(f'http://127.0.0.1:{target_game_port}/bo1z-coop/')
+                    return 0
+            except Exception:
+                pass
         reserved.append(reserve_launch_port('127.0.0.1', args.port, 8767))
         args.port = reserved[0].getsockname()[1]
         if not remote:

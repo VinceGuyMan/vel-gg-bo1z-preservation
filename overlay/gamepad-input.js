@@ -7,7 +7,7 @@ export const CONTROLLER_FIELDS=Object.freeze([
  {key:'moveDeadzone',label:'Movement activation',type:'range',min:.15,max:.75,step:.01,format:'percent'},
  {key:'diagonalAssist',label:'Straight-line assist',type:'range',min:0,max:.9,step:.05,format:'percent'},
  {key:'deadzone',label:'Aim deadzone',type:'range',min:.05,max:.4,step:.01,format:'percent'},
- {key:'sensitivity',label:'Horizontal aim speed',type:'range',min:.1,max:3,step:.05},
+ {key:'sensitivity',label:'Horizontal aim speed',type:'range',min:.1,max:25,step:.05},
  {key:'verticalScale',label:'Vertical aim multiplier',type:'range',min:.25,max:1.5,step:.05},
  {key:'responseCurve',label:'Aim response curve',type:'range',min:1,max:3,step:.1},
  {key:'adsScale',label:'Aim-down-sights multiplier',type:'range',min:.2,max:1,step:.05},

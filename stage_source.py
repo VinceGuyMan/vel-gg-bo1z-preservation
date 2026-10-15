@@ -17,11 +17,14 @@ ALLOWED = {
     "portable_replay.py", "launch_coop.py", "free_host.py", "signaling.py", "ice_issuer.py",
     "build_metadata.py", "verify.py", "refresh_checksums.py", "network-config.json",
     "ws-loader.js", "ws-transport.js", "ws_relay.py", "ws_wire.py",
+    "player-profile.js", "player_profile.py", "host-settings.js", "host_settings.py",
+    "lan-lobby.js", "lan_discovery.py", "zinfo_overlay.gsc",
     "Launch Game.command", "Launch Game.cmd", "Launch Co-op.command", "Launch Co-op.cmd",
     "Launch LAN Host.command", "Launch LAN Host.cmd",
     "Launch Free Internet Host.command", "Launch Free Internet Host.cmd",
     "patch-manifest.json", "compile-report.json",
     "README.md", "TRANSFER.md", "CAPABILITIES.md", "PROVENANCE.md", "PACKAGING-NOTES.md",
+    "CONTROLS.md", "LAUNCH.md",
     "deployment/README.md", "deployment/Dockerfile", "deployment/Caddyfile", "deployment/.dockerignore",
 }
 KIT_FILES = {

@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parent.parent
 CAPTURE_INDEX = "b370176be5786afa4e5fb2f69558a9940b288718303672b2196b4438ea020fe2"
 RECIPE = "8f31cfbb516617dc08268f7ada6365ba5abdccbb88c3aa7275f383a4a7926943"
-SUFFIXES = {".py", ".js", ".cjs", ".css", ".html", ".json", ".md", ".txt", ".wat", ".svg", ".yml", ".command", ".cmd"}
+SUFFIXES = {".py", ".js", ".cjs", ".css", ".html", ".json", ".md", ".txt", ".wat", ".svg", ".yml", ".command", ".cmd", ".gsc"}
 FILENAMES = {".gitignore", ".gitattributes", ".dockerignore", "Dockerfile", "Caddyfile"}
 
 
@@ -101,8 +101,8 @@ def main() -> None:
         raise ValueError("Frozen engine recipe changed")
     approved = json.loads(files["approved-sources.json"])
     actual_overlay = {name.removeprefix("overlay/") for name in files if name.startswith("overlay/")}
-    if len(approved) != 52 or set(approved) != actual_overlay:
-        raise ValueError("Approved overlay list differs from the 52-source preview")
+    if len(approved) != len(actual_overlay) or set(approved) != actual_overlay:
+        raise ValueError("Approved overlay list differs from overlay source tree")
     for name, pin in approved.items():
         safe_name(name)
         if digest(files["overlay/" + name]) != pin:
