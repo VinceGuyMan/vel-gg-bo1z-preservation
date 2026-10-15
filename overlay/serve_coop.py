@@ -163,44 +163,27 @@ def overlays(root):
       }
       el.innerHTML = html;
     }
-    let zinfoAlivePtr = 0, zinfoLeftPtr = 0, lastScan = 0;
-    function pollZinfoMemory() {
+    function updateCounterDisplay(alive, left, round) {
       try {
         const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
-        if (!p.zombieCounter) {
-          if (hudEl) hudEl.style.display = 'none';
-          return;
-        }
-        if (!module?.HEAP32) return;
-        const now = performance.now();
-        const h32 = module.HEAP32;
-        if (!zinfoAlivePtr && now - lastScan > 1500) {
-          lastScan = now;
-          for (let i = 0; i < Math.min(h32.length, 3000000); ++i) {
-            if (h32[i] === 356925) {
-              zinfoAlivePtr = (i << 2);
-              break;
-            }
-          }
-        }
-        if (!zinfoLeftPtr && zinfoAlivePtr) {
-          for (let i = 0; i < Math.min(h32.length, 3000000); ++i) {
-            if (h32[i] === 77554) {
-              zinfoLeftPtr = (i << 2);
-              break;
-            }
-          }
-        }
-        if (zinfoAlivePtr) {
-          const alive = h32[(zinfoAlivePtr >> 2) + 4];
-          const left = zinfoLeftPtr ? h32[(zinfoLeftPtr >> 2) + 4] : alive;
-          if (alive >= 0 && alive < 2000) {
-            updateCounterDisplay(alive, left);
-          }
-        }
+        if (p.zombieCounter === false) return;
       } catch {}
+      const el = getCounterHud();
+      if (!el) return;
+      el.style.display = 'block';
+      let html = '<span style="color:#ff4444;font-weight:900;margin-right:6px;">ZOMBIES:</span>' + alive;
+      if (left !== undefined && left !== null && left !== alive) {
+        html += ' <span style="color:#bbbbbb;font-size:13px;font-weight:normal;">(' + left + ' left)</span>';
+      }
+      if (round !== undefined && round !== null && round !== '') {
+        html += ' &nbsp;|&nbsp; <span style="color:#ffd700;font-weight:bold;">ROUND ' + round + '</span>';
+      }
+      el.innerHTML = html;
     }
-    setInterval(pollZinfoMemory, 250);
+    try {
+      const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
+      if (p.zombieCounter !== false) setTimeout(() => updateCounterDisplay(0, 0, 1), 3000);
+    } catch {}
     document.addEventListener('fullscreenchange', () => {
       if (hudEl) {
         const target = document.fullscreenElement || document.body;
@@ -210,8 +193,8 @@ def overlays(root):
 """
     counter_log_injection = """
     if (String(message).includes('zinfo:')) {
-      const m = /zinfo:\s+alive\s+(\d+)\s+left\s+(\d+)/.exec(String(message));
-      if (m && typeof updateCounterDisplay === 'function') updateCounterDisplay(m[1], m[2]);
+      const m = /zinfo:\s+alive\s+(\d+)\s+left\s+(\d+)(?:\s+round\s+(\d+))?/.exec(String(message));
+      if (m && typeof updateCounterDisplay === 'function') updateCounterDisplay(m[1], m[2], m[3]);
     }
     const hm = /alive\s+(\d+)\s+limit\s+(\d+)/.exec(String(message));
     if (hm && typeof updateCounterDisplay === 'function') updateCounterDisplay(hm[1]);
@@ -360,39 +343,37 @@ export const manifestUrl = (wantsMods || horde) ? packBase + 'web-manifest-horde
                 result['/bo1z/five/pack/' + rel_path] = (mtype, data)
     for slug in MAPS:
         prefix = '/bo1z/pack/' if slug == 'five' else f'/bo1z/{slug}/pack/'
-        src_horde = root / ('site/bo1z/pack/web-manifest-horde.json' if slug == 'five' else f'site/bo1z/{slug}/pack/web-manifest-horde.json')
-        if src_horde.is_file():
-            manifest = json.loads(src_horde.read_text(encoding='utf-8'))
-            for f in manifest.get('files', []):
-                if f.get('path') == 'mods/zinfo/maps/zinfo/_zinfo.gsc':
-                    old_size = f.get('size', 2142)
+        src_classic = root / ('site/bo1z/manifest.json' if slug == 'five' else f'site/bo1z/{slug}/manifest.json')
+        manifest = json.loads(src_classic.read_text(encoding='utf-8'))
+        existing_paths = {f['path'] for f in manifest.get('files', [])}
+        extra_files = [
+            {'path': rel, 'size': len(data), 'sha256': hashlib.sha256(data).hexdigest(), 'kind': 'mod', 'priority': 'boot', 'class': 'boot'}
+            for rel, data in mod_support_data.items() if rel not in existing_paths
+        ]
+        zinfo_rel = 'mods/zinfo/maps/zinfo/_zinfo.gsc'
+        if zinfo_rel not in existing_paths:
+            extra_files.append({'path': zinfo_rel, 'size': zinfo_size, 'sha256': zinfo_sha256, 'kind': 'mod', 'priority': 'boot', 'class': 'boot'})
+        else:
+            for f in manifest['files']:
+                if f['path'] == zinfo_rel:
                     f['sha256'] = zinfo_sha256
                     f['size'] = zinfo_size
-                    delta = zinfo_size - old_size
-                    manifest['total_bytes'] = manifest.get('total_bytes', 0) + delta
-                    if 'class_bytes' in manifest and 'boot' in manifest['class_bytes']:
-                        manifest['class_bytes']['boot'] += delta
-            manifest_bytes = json.dumps(manifest, separators=(',', ':')).encode('utf-8')
-            result[prefix + 'web-manifest-horde.json'] = ('application/json', manifest_bytes)
-            if slug == 'five':
-                result['/bo1z/five/pack/web-manifest-horde.json'] = ('application/json', manifest_bytes)
+        manifest['files'] = manifest.get('files', []) + extra_files
+        added_bytes = sum(f['size'] for f in extra_files)
+        manifest['total_bytes'] = manifest.get('total_bytes', 0) + added_bytes
+        if 'class_bytes' in manifest and 'boot' in manifest['class_bytes']:
+            manifest['class_bytes']['boot'] += added_bytes
+        manifest['version'] = hashlib.sha256(json.dumps(manifest['files']).encode('utf-8')).hexdigest()
+        manifest_bytes = json.dumps(manifest, separators=(',', ':')).encode('utf-8')
+        result[prefix + 'web-manifest-horde.json'] = ('application/json', manifest_bytes)
+        result[prefix + 'manifest.json'] = ('application/json', manifest_bytes)
+        if slug == 'five':
+            result['/bo1z/manifest.json'] = ('application/json', manifest_bytes)
+            result['/bo1z/five/manifest.json'] = ('application/json', manifest_bytes)
+            result['/bo1z/five/pack/manifest.json'] = ('application/json', manifest_bytes)
+            result['/bo1z/five/pack/web-manifest-horde.json'] = ('application/json', manifest_bytes)
         else:
-            src_classic = root / f'site/bo1z/{slug}/manifest.json'
-            manifest = json.loads(src_classic.read_text(encoding='utf-8'))
-            extra_files = [
-                {'path': rel, 'size': len(data), 'sha256': hashlib.sha256(data).hexdigest(), 'kind': 'mod', 'priority': 'boot', 'class': 'boot'}
-                for rel, data in mod_support_data.items()
-            ] + [
-                {'path': 'mods/zinfo/maps/zinfo/_zinfo.gsc', 'size': zinfo_size, 'sha256': zinfo_sha256, 'kind': 'mod', 'priority': 'boot', 'class': 'boot'}
-            ]
-            manifest['files'] = manifest.get('files', []) + extra_files
-            added_bytes = sum(f['size'] for f in extra_files)
-            manifest['total_bytes'] = manifest.get('total_bytes', 0) + added_bytes
-            if 'class_bytes' in manifest and 'boot' in manifest['class_bytes']:
-                manifest['class_bytes']['boot'] += added_bytes
-            manifest['version'] = hashlib.sha256(json.dumps(manifest['files']).encode('utf-8')).hexdigest()
-            manifest_bytes = json.dumps(manifest, separators=(',', ':')).encode('utf-8')
-            result[prefix + 'web-manifest-horde.json'] = ('application/json', manifest_bytes)
+            result[f'/bo1z/{slug}/manifest.json'] = ('application/json', manifest_bytes)
     full = json.loads((HERE / 'build-metadata.json').read_text(encoding='utf-8'))
     peer = {key: full[key] for key in full['peerGuardFields']}
     actual = hashlib.sha256(result['/bo1z/artifacts/KisakBlack-web-coop.wasm'][1]).hexdigest()

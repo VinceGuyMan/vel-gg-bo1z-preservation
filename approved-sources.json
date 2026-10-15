@@ -49,7 +49,7 @@
   "runtime-attestation.js": "3a24eefc67f2bc060b199c6b1ac783bf215b93121fe0459b8f7e9e0ac1a6a987",
   "segmented_writer.py": "d2fda25dc23bde46b60caaf63d7f103099b05fe59d6cd99087a458280d377211",
   "serve_assets.cjs": "649aac8eba51ed7b2ef90e964e7349a6093b3a1550d2b62f898628c8b3de6d33",
-  "serve_coop.py": "22318bf515e946530c6daa769d5a51d978bd1c22b0ffd340a1afae976c90da34",
+  "serve_coop.py": "4093e3aa28f0dd662e3c9fea7f380998e7842707f991f686956d3b597114c508",
   "signaling.py": "f76ac461c8ab338182d65f5992c02d35c6d92deb3111e8d6711c5b5e6a074ba8",
   "start-gate.js": "3a146bcb4b42f1a5ddefa5090315979488f6dedcb6be6a003233dac6a876e30a",
   "status-ui.js": "7138ef3fadab6d425883ea969e391dc303ca3b4731f1b47cc34a73e4174a40ec",
@@ -59,5 +59,5 @@
   "ws-transport.js": "9a24f7e4cd9598d06a3c649401652c233eb7f5ad835b23f57e7f9590ec6e902d",
   "ws_relay.py": "79a72efc73578733f46cfd232f3efcfbf9297c9225844f4f42a5064a647833a1",
   "ws_wire.py": "1305e7ad0f17a4ba6a2fd34ad99806c89482b74e693ba01ef6f48032c3aab58a",
-  "zinfo_overlay.gsc": "05c33219a9422ce7cc193b07d4195b7ae2f639986a7ac185421a82760bcef2ce"
+  "zinfo_overlay.gsc": "7ab5f8c2cb1724d03d0d007e79966b737d871b66dbaddc4d2800d2937cc5de08"
 }
