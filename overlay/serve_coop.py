@@ -116,96 +116,13 @@ def overlays(root):
         }
         setDvar('zinfo', '1');
         setDvar('kisak_mod_tabinfo', '1');
-        setDvar('developer', '1');
-        setDvar('developer_script', '1');
-        setDvar('logfile', '1');
-        setDvar('g_log', 'games_mp.log');
-        setDvar('g_logSync', '1');
+        setDvar('developer', '0');
+        setDvar('developer_script', '0');
         setDvar('con_minicon', '0');
       }
     } catch {}
 """
-    counter_hud_script = """
-    let hudEl = null;
-    function getCounterHud() {
-      if (hudEl && hudEl.isConnected) return hudEl;
-      hudEl = document.getElementById('zombie-counter-overlay');
-      if (!hudEl) {
-        hudEl = document.createElement('div');
-        hudEl.id = 'zombie-counter-overlay';
-        Object.assign(hudEl.style, {
-          position: 'fixed',
-          top: '14px',
-          right: '18px',
-          zIndex: '2147483647',
-          pointerEvents: 'none',
-          userSelect: 'none',
-          font: "bold 16px/1.3 'Segoe UI', system-ui, -apple-system, sans-serif",
-          color: '#ffffff',
-          textShadow: '0 0 8px rgba(0,0,0,0.9), 1px 1px 3px #000',
-          background: 'rgba(12, 12, 12, 0.78)',
-          border: '1.5px solid rgba(230, 40, 40, 0.55)',
-          borderRadius: '7px',
-          padding: '6px 14px',
-          letterSpacing: '0.05em',
-          boxShadow: '0 3px 10px rgba(0,0,0,0.6)',
-          display: 'none',
-          transition: 'opacity 0.2s ease'
-        });
-        const target = document.fullscreenElement || document.body;
-        target.appendChild(hudEl);
-      }
-      return hudEl;
-    }
-    function updateCounterDisplay(alive, left, round) {
-      try {
-        const p = JSON.parse(localStorage.getItem('bo1z-title-preferences-v1') || '{}');
-        if (p.zombieCounter === false) return;
-      } catch {}
-      const el = getCounterHud();
-      if (!el) return;
-      el.style.display = 'block';
-      let html = '<span style="color:#ff4444;font-weight:900;margin-right:6px;">ZOMBIES:</span>' + alive;
-      const numAlive = parseInt(alive, 10);
-      const numLeft = left !== undefined && left !== null && left !== '' ? parseInt(left, 10) : numAlive;
-      if (!Number.isNaN(numLeft) && numLeft > numAlive) {
-        html += ' <span style="color:#bbbbbb;font-size:13px;font-weight:normal;">(' + numLeft + ' remaining)</span>';
-      }
-      if (round !== undefined && round !== null && round !== '') {
-        html += ' &nbsp;|&nbsp; <span style="color:#ffd700;font-weight:bold;">ROUND ' + round + '</span>';
-      }
-      el.innerHTML = html;
-    }
-    document.addEventListener('fullscreenchange', () => {
-      if (hudEl) {
-        const target = document.fullscreenElement || document.body;
-        if (hudEl.parentElement !== target) target.appendChild(hudEl);
-      }
-    });
-"""
-    counter_log_injection = """
-    const strMsg = String(message);
-    if (strMsg.includes('zinfo:') || strMsg.includes('zinfo alive')) {
-      const aliveMatch = /alive\s*(\d+)/i.exec(strMsg);
-      const leftMatch = /left\s*(\d+)/i.exec(strMsg);
-      const roundMatch = /round\s*(\d+)/i.exec(strMsg);
-      if (aliveMatch && typeof updateCounterDisplay === 'function') {
-        updateCounterDisplay(aliveMatch[1], leftMatch ? leftMatch[1] : undefined, roundMatch ? roundMatch[1] : undefined);
-      }
-    } else if (strMsg.includes('horde:') || strMsg.includes('killrate')) {
-      const aliveMatch = /alive\s*(\d+)/i.exec(strMsg);
-      const limitMatch = /limit\s*(\d+)/i.exec(strMsg);
-      const totalMatch = /total\s*(\d+)/i.exec(strMsg);
-      const roundMatch = /round\s*(\d+)/i.exec(strMsg);
-      if (aliveMatch && typeof updateCounterDisplay === 'function') {
-        const a = parseInt(aliveMatch[1], 10);
-        const l = totalMatch ? (a + parseInt(totalMatch[1], 10)) : limitMatch ? parseInt(limitMatch[1], 10) : undefined;
-        updateCounterDisplay(a, l, roundMatch ? roundMatch[1] : undefined);
-      }
-    }
-"""
-    original_engine_patched = profile_import + original_engine.replace('function log(message, error = false) {', counter_hud_script + '\n  function log(message, error = false) {' + counter_log_injection).replace('module.callMain(args);', prefs_injection + "args.splice(args.indexOf('+devmap'),0,'+set','name',getPlayerProfile().name); module.callMain(args);")
-    engine = engine.replace('function log(message, error = false) {', counter_hud_script + '\n  function log(message, error = false) {' + counter_log_injection)
+    original_engine_patched = profile_import + original_engine.replace('module.callMain(args);', prefs_injection + "args.splice(args.indexOf('+devmap'),0,'+set','name',getPlayerProfile().name); module.callMain(args);")
     engine = engine.replace(needle, prefs_injection + """const devmap=args.indexOf('+devmap');
     if(devmap<0)throw Error('Experimental co-op requires a configured Zombies map');
     args.splice(devmap,0,'+set','name',getPlayerProfile().name);
